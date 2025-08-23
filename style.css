@@ -831,11 +831,20 @@ input[type="datetime-local"]:not(:placeholder-shown) {
         margin: 0 !important;
         padding: 0 !important;
         page-break-inside: avoid !important;
+        page-break-after: avoid !important;
+        page-break-before: avoid !important;
         width: 100% !important;
         height: auto !important;
-        max-height: none !important;
-        overflow: visible !important;
+        max-height: 277mm !important;
+        overflow: hidden !important;
         transform: none !important;
+    }
+    
+    /* Prevent all elements from creating page breaks */
+    .invoice-preview * {
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
+        page-break-before: avoid !important;
     }
     
     /* Invoice Header - Compact */
