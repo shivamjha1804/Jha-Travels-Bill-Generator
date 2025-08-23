@@ -457,20 +457,101 @@ function generatePDFSafari() {
     const date = currentInvoiceData.date.replace(/\//g, '_');
     
     const element = document.getElementById('invoicePreview');
+    
+    // Add PDF-optimized CSS temporarily
+    const pdfStyle = document.createElement('style');
+    pdfStyle.id = 'pdf-optimize-style';
+    pdfStyle.innerHTML = `
+        #invoicePreview {
+            background: white !important;
+            font-family: 'Arial', 'Helvetica', sans-serif !important;
+            color: #000 !important;
+            width: 210mm !important;
+            min-height: 297mm !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+        }
+        
+        .invoice-header {
+            background-color: #1e3a8a !important;
+            color: white !important;
+            text-align: center !important;
+            padding: 20px 0 !important;
+            margin: 0 0 15px 0 !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        
+        .invoice-header h1 {
+            margin: 0 !important;
+            font-size: 28px !important;
+            font-weight: bold !important;
+            color: white !important;
+            font-family: 'Arial', 'Helvetica', sans-serif !important;
+        }
+        
+        .company-info-box {
+            border: 2px solid #333 !important;
+            background-color: #f8f9fa !important;
+            padding: 8px !important;
+            margin: 0 0 10px 0 !important;
+            text-align: center !important;
+            box-sizing: border-box !important;
+        }
+        
+        .billing-table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            font-family: 'Arial', 'Helvetica', sans-serif !important;
+            margin: 10px 0 !important;
+        }
+        
+        .billing-table th,
+        .billing-table td {
+            border: 1px solid #333 !important;
+            padding: 8px !important;
+            font-size: 14px !important;
+            text-align: left !important;
+            background: white !important;
+            color: #000 !important;
+        }
+        
+        .billing-table th {
+            background-color: #f8f9fa !important;
+            font-weight: bold !important;
+        }
+        
+        .total-row {
+            background-color: #e9ecef !important;
+            font-weight: bold !important;
+        }
+    `;
+    document.head.appendChild(pdfStyle);
+    
     const options = {
-        margin: 10,
+        margin: [15, 15, 15, 15],
         filename: `JHA_TRAVELS_${customerName}_${date}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
+        image: { 
+            type: 'jpeg', 
+            quality: 1
+        },
         html2canvas: { 
-            scale: 2,
+            scale: 3,
             useCORS: true,
             letterRendering: true,
-            allowTaint: false
+            allowTaint: false,
+            backgroundColor: '#ffffff',
+            width: 794,
+            height: 1123,
+            dpi: 300
         },
         jsPDF: { 
             unit: 'mm', 
             format: 'a4', 
-            orientation: 'portrait' 
+            orientation: 'portrait',
+            putOnlyUsedFonts: true,
+            floatPrecision: 16
         }
     };
     
@@ -478,7 +559,11 @@ function generatePDFSafari() {
     const pdfActions = document.getElementById('pdfActions');
     pdfActions.style.display = 'block';
     
-    html2pdf().set(options).from(element).save();
+    html2pdf().set(options).from(element).save().then(() => {
+        // Remove the temporary style after PDF generation
+        const styleEl = document.getElementById('pdf-optimize-style');
+        if (styleEl) styleEl.remove();
+    });
 }
 
 // Chrome/Desktop PDF generation using window.print()
@@ -547,24 +632,109 @@ function downloadPDFSafari() {
     const date = currentInvoiceData.date.replace(/\//g, '_');
     
     const element = document.getElementById('invoicePreview');
+    
+    // Add PDF-optimized CSS temporarily
+    const pdfStyle = document.createElement('style');
+    pdfStyle.id = 'pdf-download-optimize-style';
+    pdfStyle.innerHTML = `
+        #invoicePreview {
+            background: white !important;
+            font-family: 'Arial', 'Helvetica', sans-serif !important;
+            color: #000 !important;
+            width: 210mm !important;
+            min-height: 297mm !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+        }
+        
+        .invoice-header {
+            background-color: #1e3a8a !important;
+            color: white !important;
+            text-align: center !important;
+            padding: 20px 0 !important;
+            margin: 0 0 15px 0 !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        
+        .invoice-header h1 {
+            margin: 0 !important;
+            font-size: 28px !important;
+            font-weight: bold !important;
+            color: white !important;
+            font-family: 'Arial', 'Helvetica', sans-serif !important;
+        }
+        
+        .company-info-box {
+            border: 2px solid #333 !important;
+            background-color: #f8f9fa !important;
+            padding: 8px !important;
+            margin: 0 0 10px 0 !important;
+            text-align: center !important;
+            box-sizing: border-box !important;
+        }
+        
+        .billing-table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            font-family: 'Arial', 'Helvetica', sans-serif !important;
+            margin: 10px 0 !important;
+        }
+        
+        .billing-table th,
+        .billing-table td {
+            border: 1px solid #333 !important;
+            padding: 8px !important;
+            font-size: 14px !important;
+            text-align: left !important;
+            background: white !important;
+            color: #000 !important;
+        }
+        
+        .billing-table th {
+            background-color: #f8f9fa !important;
+            font-weight: bold !important;
+        }
+        
+        .total-row {
+            background-color: #e9ecef !important;
+            font-weight: bold !important;
+        }
+    `;
+    document.head.appendChild(pdfStyle);
+    
     const options = {
-        margin: 10,
+        margin: [15, 15, 15, 15],
         filename: `JHA_TRAVELS_${customerName}_${date}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
+        image: { 
+            type: 'jpeg', 
+            quality: 1
+        },
         html2canvas: { 
-            scale: 2,
+            scale: 3,
             useCORS: true,
             letterRendering: true,
-            allowTaint: false
+            allowTaint: false,
+            backgroundColor: '#ffffff',
+            width: 794,
+            height: 1123,
+            dpi: 300
         },
         jsPDF: { 
             unit: 'mm', 
             format: 'a4', 
-            orientation: 'portrait' 
+            orientation: 'portrait',
+            putOnlyUsedFonts: true,
+            floatPrecision: 16
         }
     };
     
-    html2pdf().set(options).from(element).save();
+    html2pdf().set(options).from(element).save().then(() => {
+        // Remove the temporary style after PDF generation
+        const styleEl = document.getElementById('pdf-download-optimize-style');
+        if (styleEl) styleEl.remove();
+    });
 }
 
 // Chrome/Desktop download PDF using window.print()
