@@ -7,6 +7,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set today's date as default
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('invoiceDate').value = today;
+    
+    // Check if pdfMake is loaded
+    setTimeout(() => {
+        if (typeof pdfMake === 'undefined') {
+            console.error('PDFMake failed to load');
+        } else {
+            console.log('PDFMake loaded successfully');
+        }
+    }, 2000);
 });
 
 function selectBillType(type) {
@@ -440,192 +449,227 @@ function generateInvoiceHTML(data) {
 
 // Universal PDF generation using PDFMake - works perfectly on all browsers
 function generatePDF() {
+    console.log('generatePDF called');
+    
     if (!currentInvoiceData) {
         alert('No invoice data available');
         return;
     }
     
-    const docDefinition = createPDFDocDefinition(currentInvoiceData);
+    // Check if pdfMake is loaded
+    if (typeof pdfMake === 'undefined') {
+        alert('PDF library is not loaded. Please refresh the page and try again.');
+        console.error('pdfMake is not defined');
+        return;
+    }
     
-    // Show PDF actions
-    const pdfActions = document.getElementById('pdfActions');
-    pdfActions.style.display = 'block';
-    
-    // Create and show PDF preview
-    pdfMake.createPdf(docDefinition).getBlob((blob) => {
-        const url = URL.createObjectURL(blob);
-        window.open(url, '_blank');
-    });
+    try {
+        const docDefinition = createPDFDocDefinition(currentInvoiceData);
+        console.log('docDefinition created:', docDefinition);
+        
+        // Show PDF actions
+        const pdfActions = document.getElementById('pdfActions');
+        pdfActions.style.display = 'block';
+        
+        // Create and show PDF preview
+        pdfMake.createPdf(docDefinition).getBlob((blob) => {
+            console.log('PDF blob created:', blob);
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        });
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        alert('Error generating PDF: ' + error.message);
+    }
 }
 
 // Universal PDF download using PDFMake - works perfectly on all browsers
 function downloadPDF() {
+    console.log('downloadPDF called');
+    
     if (!currentInvoiceData) {
         alert('No invoice data available');
         return;
     }
     
-    const docDefinition = createPDFDocDefinition(currentInvoiceData);
-    const customerName = currentInvoiceData.customer.name.replace(/\s+/g, '_');
-    const date = currentInvoiceData.date.replace(/\//g, '_');
+    // Check if pdfMake is loaded
+    if (typeof pdfMake === 'undefined') {
+        alert('PDF library is not loaded. Please refresh the page and try again.');
+        console.error('pdfMake is not defined');
+        return;
+    }
     
-    // Download PDF with filename
-    pdfMake.createPdf(docDefinition).download(`JHA_TRAVELS_${customerName}_${date}.pdf`);
+    try {
+        const docDefinition = createPDFDocDefinition(currentInvoiceData);
+        const customerName = currentInvoiceData.customer.name.replace(/\s+/g, '_');
+        const date = currentInvoiceData.date.replace(/\//g, '_');
+        
+        console.log('Downloading PDF:', `JHA_TRAVELS_${customerName}_${date}.pdf`);
+        
+        // Download PDF with filename
+        pdfMake.createPdf(docDefinition).download(`JHA_TRAVELS_${customerName}_${date}.pdf`);
+    } catch (error) {
+        console.error('Error downloading PDF:', error);
+        alert('Error downloading PDF: ' + error.message);
+    }
 }
 
 // Create PDFMake document definition for invoice
 function createPDFDocDefinition(data) {
+    console.log('Creating PDF document definition for:', data);
+    
     const { customer, billType, billData, extras, date } = data;
     
     let totalAmount = 0;
-    let tableBody = [
-        [
-            { text: 'Description', style: 'tableHeader' },
-            { text: billType === 'pickup-drop' ? 'Address' : 'Value', style: 'tableHeader' },
-            { text: 'Total', style: 'tableHeader' }
-        ]
-    ];
+    let tableBody = [];
+    
+    // Table header
+    tableBody.push([
+        { text: 'Description', bold: true, fillColor: '#1e3a8a', color: 'white', alignment: 'center' },
+        { text: billType === 'pickup-drop' ? 'Address' : 'Value', bold: true, fillColor: '#1e3a8a', color: 'white', alignment: 'center' },
+        { text: 'Total', bold: true, fillColor: '#1e3a8a', color: 'white', alignment: 'center' }
+    ]);
     
     // Build table rows based on bill type
     if (billType === 'pickup-drop') {
         totalAmount = parseFloat(billData.amount) || 0;
-        tableBody.push(
-            ['Pick-up', billData.pickup, { text: `Rs. ${totalAmount.toLocaleString()}/-`, rowSpan: 2, alignment: 'center' }],
-            ['Drop', billData.drop, '']
-        );
+        tableBody.push([
+            'Pick-up',
+            billData.pickup,
+            { text: `Rs. ${totalAmount.toLocaleString()}/-`, rowSpan: 2, alignment: 'center' }
+        ]);
+        tableBody.push([
+            'Drop',
+            billData.drop,
+            ''
+        ]);
     } else if (billType === 'duration') {
         totalAmount = billData.hours * billData.hourlyRate;
         let timeDetails = `${billData.hours} Hours`;
         if (billData.distance) timeDetails += ` (${billData.distance} km)`;
-        if (billData.startDateTime && billData.endDateTime) {
-            const startTime = new Date(billData.startDateTime).toLocaleString('en-GB');
-            const endTime = new Date(billData.endDateTime).toLocaleString('en-GB');
-            timeDetails += `\nFrom: ${startTime}\nTo: ${endTime}`;
-        }
         
-        tableBody.push(
-            ['Time', timeDetails, `${billData.hours} Hours`],
-            ['Per Hour Rate', `Rs. ${billData.hourlyRate.toLocaleString()}/-`, `Rs ${billData.hourlyRate.toLocaleString()}/-`]
-        );
+        tableBody.push([
+            'Time',
+            timeDetails,
+            `${billData.hours} Hours`
+        ]);
+        tableBody.push([
+            'Per Hour Rate',
+            `Rs. ${billData.hourlyRate.toLocaleString()}/-`,
+            `Rs ${billData.hourlyRate.toLocaleString()}/-`
+        ]);
     } else if (billType === 'distance') {
         totalAmount = billData.distance * billData.perKmRate;
         let distanceDetails = `${billData.distance} km`;
         
-        if (billData.startAddress && billData.endAddress) {
-            distanceDetails += `\nFrom: ${billData.startAddress}\nTo: ${billData.endAddress}`;
-        }
-        
-        if (billData.startKm && billData.endKm) {
-            distanceDetails += `\nStart: ${billData.startKm.toLocaleString()} km\nEnd: ${billData.endKm.toLocaleString()} km`;
-        }
-        
-        tableBody.push(
-            ['Distance', distanceDetails, `${billData.distance} km`],
-            ['Per Km Rate', `Rs. ${billData.perKmRate.toLocaleString()}/-`, `Rs ${billData.perKmRate.toLocaleString()}/-`]
-        );
+        tableBody.push([
+            'Distance',
+            distanceDetails,
+            `${billData.distance} km`
+        ]);
+        tableBody.push([
+            'Per Km Rate',
+            `Rs. ${billData.perKmRate.toLocaleString()}/-`,
+            `Rs ${billData.perKmRate.toLocaleString()}/-`
+        ]);
     }
     
     // Add extras
-    extras.forEach(extra => {
-        tableBody.push([
-            `Extra (${extra.reason})`,
-            extra.description || '-',
-            `Rs. ${extra.amount.toLocaleString()}/-`
-        ]);
-        totalAmount += extra.amount;
-    });
+    if (extras && extras.length > 0) {
+        extras.forEach(extra => {
+            tableBody.push([
+                `Extra (${extra.reason})`,
+                extra.description || '-',
+                `Rs. ${extra.amount.toLocaleString()}/-`
+            ]);
+            totalAmount += extra.amount;
+        });
+    }
     
     // Add total row
     tableBody.push([
-        { text: 'Total Amount', style: 'totalCell' },
-        { text: '-', style: 'totalCell' },
-        { text: `Rs. ${totalAmount.toLocaleString()}/-`, style: 'totalCell' }
+        { text: 'Total Amount', bold: true, fillColor: '#fbbf24', alignment: 'center' },
+        { text: '-', bold: true, fillColor: '#fbbf24', alignment: 'center' },
+        { text: `Rs. ${totalAmount.toLocaleString()}/-`, bold: true, fillColor: '#fbbf24', alignment: 'center' }
     ]);
     
-    return {
+    const docDefinition = {
         pageSize: 'A4',
-        pageMargins: [40, 60, 40, 60],
+        pageMargins: [40, 40, 40, 40],
         content: [
             // Header
             {
-                table: {
-                    widths: ['*'],
-                    body: [
-                        [{
-                            text: 'JHA TRAVELS',
-                            style: 'header',
-                            fillColor: '#1e3a8a',
-                            color: 'white'
-                        }],
-                        [{
-                            text: '"We Know Journey, Makes Memories"',
-                            style: 'tagline',
-                            fillColor: '#1e3a8a',
-                            color: 'white'
-                        }]
-                    ]
-                },
-                layout: 'noBorders'
+                text: 'JHA TRAVELS',
+                fontSize: 24,
+                bold: true,
+                alignment: 'center',
+                color: 'white',
+                background: '#1e3a8a',
+                margin: [0, 0, 0, 5]
             },
-            
-            // Company info box
             {
-                table: {
-                    widths: ['*'],
-                    body: [
-                        [{ text: 'Company Information', style: 'companyHeader', fillColor: '#f8f9fa' }]
-                    ]
-                },
-                margin: [0, 10, 0, 0]
+                text: '"We Know Journey, Makes Memories"',
+                fontSize: 12,
+                italics: true,
+                alignment: 'center',
+                color: 'white',
+                background: '#1e3a8a',
+                margin: [0, 0, 0, 15]
             },
             
-            // Company details
+            // Company Information
+            {
+                text: 'Company Information',
+                fontSize: 12,
+                bold: true,
+                alignment: 'center',
+                fillColor: '#f8f9fa',
+                margin: [0, 10, 0, 5]
+            },
             {
                 text: [
                     'Address: Hatiara Bypass Road, Jheel Bagan, Sardarpara, Kolkata - 700157\n',
                     'Phone: 9051066842 | 9830466842'
                 ],
-                style: 'companyDetails',
+                fontSize: 10,
                 alignment: 'center',
-                margin: [0, 5, 0, 15]
+                margin: [0, 0, 0, 15]
             },
             
-            // Customer header with date
+            // Customer Details and Date
             {
                 columns: [
-                    { text: 'Customer Details', style: 'sectionHeader' },
-                    { text: `Date: ${date}`, style: 'sectionHeader', alignment: 'right' }
+                    { text: 'Customer Details', fontSize: 14, bold: true },
+                    { text: `Date: ${date}`, fontSize: 14, bold: true, alignment: 'right' }
                 ],
                 margin: [0, 0, 0, 10]
             },
             
-            // Customer info
+            // Customer Info
             {
                 text: [
                     `Name: ${customer.name}\n`,
                     `Phone: ${customer.phone}\n`,
                     `Address: ${customer.address}`
                 ],
-                style: 'customerInfo',
+                fontSize: 11,
                 margin: [0, 0, 0, 15]
             },
             
-            // Billing section
-            { text: 'Billing Details', style: 'sectionHeader', margin: [0, 0, 0, 10] },
+            // Billing Details Header
+            {
+                text: 'Billing Details',
+                fontSize: 14,
+                bold: true,
+                margin: [0, 0, 0, 10]
+            },
             
-            // Billing table
+            // Billing Table
             {
                 table: {
                     headerRows: 1,
                     widths: ['25%', '50%', '25%'],
                     body: tableBody
-                },
-                layout: {
-                    fillColor: function (rowIndex, node, columnIndex) {
-                        if (rowIndex === 0) return '#1e3a8a'; // Header
-                        if (rowIndex === tableBody.length - 1) return '#fbbf24'; // Total row
-                        return null;
-                    }
                 },
                 margin: [0, 0, 0, 20]
             },
@@ -640,65 +684,15 @@ function createPDFDocDefinition(data) {
             // Footer
             {
                 text: 'Thank you for choosing JHA TRAVELS! We look forward to serving you again.',
-                style: 'footer',
+                fontSize: 11,
+                bold: true,
                 alignment: 'center'
             }
-        ],
-        styles: {
-            header: {
-                fontSize: 24,
-                bold: true,
-                alignment: 'center',
-                margin: [0, 10, 0, 5]
-            },
-            tagline: {
-                fontSize: 12,
-                italics: true,
-                alignment: 'center',
-                margin: [0, 0, 0, 10]
-            },
-            companyHeader: {
-                fontSize: 12,
-                bold: true,
-                alignment: 'center',
-                margin: [0, 8, 0, 8]
-            },
-            companyDetails: {
-                fontSize: 10,
-                lineHeight: 1.2
-            },
-            sectionHeader: {
-                fontSize: 14,
-                bold: true,
-                color: '#000'
-            },
-            customerInfo: {
-                fontSize: 11,
-                lineHeight: 1.3
-            },
-            tableHeader: {
-                bold: true,
-                fontSize: 12,
-                color: 'white',
-                alignment: 'center'
-            },
-            totalCell: {
-                bold: true,
-                fontSize: 11,
-                alignment: 'center',
-                color: '#000'
-            },
-            footer: {
-                fontSize: 11,
-                bold: true,
-                color: '#000'
-            }
-        },
-        defaultStyle: {
-            font: 'Times',
-            fontSize: 10
-        }
+        ]
     };
+    
+    console.log('PDF document definition created successfully');
+    return docDefinition;
 }
 
 function sendWhatsApp() {
