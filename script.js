@@ -486,6 +486,7 @@ function generatePDF() {
 // Universal PDF download using PDFMake - works perfectly on all browsers
 function downloadPDF() {
     console.log('downloadPDF called');
+    console.log('Device detection - iOS:', isIOS(), 'Safari:', isSafari(), 'Mobile:', isMobile());
     
     if (!currentInvoiceData) {
         alert('No invoice data available');
@@ -503,44 +504,160 @@ function downloadPDF() {
         const docDefinition = createPDFDocDefinition(currentInvoiceData);
         const customerName = currentInvoiceData.customer.name.replace(/\s+/g, '_');
         const date = currentInvoiceData.date.replace(/\//g, '_');
+        const filename = `JHA_TRAVELS_${customerName}_${date}.pdf`;
         
-        console.log('Downloading PDF:', `JHA_TRAVELS_${customerName}_${date}.pdf`);
+        console.log('Downloading PDF:', filename);
         
-        // Download PDF with filename
-        pdfMake.createPdf(docDefinition).download(`JHA_TRAVELS_${customerName}_${date}.pdf`);
+        // iOS Safari has issues with direct download - use alternative method
+        if (isIOS() && isSafari()) {
+            console.log('Using iOS Safari alternative download method');
+            
+            pdfMake.createPdf(docDefinition).getBlob((blob) => {
+                console.log('PDF blob created for iOS Safari:', blob);
+                
+                // Create a URL for the blob
+                const url = URL.createObjectURL(blob);
+                
+                // Try to use the share API if available (iOS 12+)
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'application/pdf' })] })) {
+                    console.log('Using Web Share API');
+                    const file = new File([blob], filename, { type: 'application/pdf' });
+                    navigator.share({
+                        files: [file],
+                        title: 'JHA Travels Invoice',
+                        text: 'Invoice from JHA Travels'
+                    }).then(() => {
+                        console.log('Share successful');
+                        URL.revokeObjectURL(url);
+                    }).catch((error) => {
+                        console.error('Share failed:', error);
+                        fallbackDownload(url, filename);
+                    });
+                } else {
+                    console.log('Web Share API not available, using fallback');
+                    fallbackDownload(url, filename);
+                }
+            });
+        } else {
+            // Standard download for other browsers
+            console.log('Using standard download method');
+            pdfMake.createPdf(docDefinition).download(filename);
+        }
     } catch (error) {
         console.error('Error downloading PDF:', error);
         alert('Error downloading PDF: ' + error.message);
     }
 }
 
-// Create PDFMake document definition for invoice
+// Fallback download method for iOS Safari
+function fallbackDownload(url, filename) {
+    console.log('Using fallback download method');
+    
+    // Create a temporary link and click it
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.style.display = 'none';
+    
+    document.body.appendChild(a);
+    
+    // Try to trigger download
+    try {
+        a.click();
+        console.log('Download triggered via click');
+    } catch (e) {
+        console.error('Click download failed:', e);
+        // Last resort: open in new window with instruction
+        const newWindow = window.open(url, '_blank');
+        if (newWindow) {
+            // Add a small delay then show instruction
+            setTimeout(() => {
+                alert('Please use "Share" button in Safari to save the PDF, or press and hold the PDF to save it to Files app.');
+            }, 1000);
+        } else {
+            alert('Please allow popups to download the PDF, or try using Chrome browser.');
+        }
+    }
+    
+    // Clean up
+    document.body.removeChild(a);
+    
+    // Clean up blob URL after a delay
+    setTimeout(() => {
+        URL.revokeObjectURL(url);
+    }, 5000);
+}
+
+// Device detection functions
+function isMobile() {
+    return /iPhone|iPad|iPod|Android|BlackBerry|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+}
+
+function isIOS() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent);
+}
+
+function isSafari() {
+    return /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor);
+}
+
+// Create PDFMake document definition optimized for all devices
 function createPDFDocDefinition(data) {
     console.log('Creating PDF document definition for:', data);
+    console.log('Device info - Mobile:', isMobile(), 'iOS:', isIOS(), 'Safari:', isSafari());
     
     const { customer, billType, billData, extras, date } = data;
+    const mobile = isMobile();
     
     let totalAmount = 0;
     let tableBody = [];
     
-    // Table header
+    // Mobile-optimized sizes
+    const headerFontSize = mobile ? 18 : 24;
+    const taglineFontSize = mobile ? 10 : 12;
+    const sectionFontSize = mobile ? 12 : 14;
+    const textFontSize = mobile ? 9 : 11;
+    const tableFontSize = mobile ? 8 : 10;
+    
+    // Table header with mobile optimization
     tableBody.push([
-        { text: 'Description', bold: true, fillColor: '#1e3a8a', color: 'white', alignment: 'center' },
-        { text: billType === 'pickup-drop' ? 'Address' : 'Value', bold: true, fillColor: '#1e3a8a', color: 'white', alignment: 'center' },
-        { text: 'Total', bold: true, fillColor: '#1e3a8a', color: 'white', alignment: 'center' }
+        { 
+            text: 'Description', 
+            bold: true, 
+            fillColor: '#1e3a8a', 
+            color: 'white', 
+            alignment: 'center',
+            fontSize: tableFontSize
+        },
+        { 
+            text: billType === 'pickup-drop' ? 'Address' : 'Value', 
+            bold: true, 
+            fillColor: '#1e3a8a', 
+            color: 'white', 
+            alignment: 'center',
+            fontSize: tableFontSize
+        },
+        { 
+            text: 'Total', 
+            bold: true, 
+            fillColor: '#1e3a8a', 
+            color: 'white', 
+            alignment: 'center',
+            fontSize: tableFontSize
+        }
     ]);
     
     // Build table rows based on bill type
     if (billType === 'pickup-drop') {
         totalAmount = parseFloat(billData.amount) || 0;
         tableBody.push([
-            'Pick-up',
-            billData.pickup,
-            { text: `Rs. ${totalAmount.toLocaleString()}/-`, rowSpan: 2, alignment: 'center' }
+            { text: 'Pick-up', fontSize: tableFontSize },
+            { text: billData.pickup, fontSize: tableFontSize },
+            { text: `Rs. ${totalAmount.toLocaleString()}/-`, rowSpan: 2, alignment: 'center', fontSize: tableFontSize }
         ]);
         tableBody.push([
-            'Drop',
-            billData.drop,
+            { text: 'Drop', fontSize: tableFontSize },
+            { text: billData.drop, fontSize: tableFontSize },
             ''
         ]);
     } else if (billType === 'duration') {
@@ -549,28 +666,28 @@ function createPDFDocDefinition(data) {
         if (billData.distance) timeDetails += ` (${billData.distance} km)`;
         
         tableBody.push([
-            'Time',
-            timeDetails,
-            `${billData.hours} Hours`
+            { text: 'Time', fontSize: tableFontSize },
+            { text: timeDetails, fontSize: tableFontSize },
+            { text: `${billData.hours} Hours`, fontSize: tableFontSize }
         ]);
         tableBody.push([
-            'Per Hour Rate',
-            `Rs. ${billData.hourlyRate.toLocaleString()}/-`,
-            `Rs ${billData.hourlyRate.toLocaleString()}/-`
+            { text: 'Per Hour Rate', fontSize: tableFontSize },
+            { text: `Rs. ${billData.hourlyRate.toLocaleString()}/-`, fontSize: tableFontSize },
+            { text: `Rs ${billData.hourlyRate.toLocaleString()}/-`, fontSize: tableFontSize }
         ]);
     } else if (billType === 'distance') {
         totalAmount = billData.distance * billData.perKmRate;
         let distanceDetails = `${billData.distance} km`;
         
         tableBody.push([
-            'Distance',
-            distanceDetails,
-            `${billData.distance} km`
+            { text: 'Distance', fontSize: tableFontSize },
+            { text: distanceDetails, fontSize: tableFontSize },
+            { text: `${billData.distance} km`, fontSize: tableFontSize }
         ]);
         tableBody.push([
-            'Per Km Rate',
-            `Rs. ${billData.perKmRate.toLocaleString()}/-`,
-            `Rs ${billData.perKmRate.toLocaleString()}/-`
+            { text: 'Per Km Rate', fontSize: tableFontSize },
+            { text: `Rs. ${billData.perKmRate.toLocaleString()}/-`, fontSize: tableFontSize },
+            { text: `Rs ${billData.perKmRate.toLocaleString()}/-`, fontSize: tableFontSize }
         ]);
     }
     
@@ -578,9 +695,9 @@ function createPDFDocDefinition(data) {
     if (extras && extras.length > 0) {
         extras.forEach(extra => {
             tableBody.push([
-                `Extra (${extra.reason})`,
-                extra.description || '-',
-                `Rs. ${extra.amount.toLocaleString()}/-`
+                { text: `Extra (${extra.reason})`, fontSize: tableFontSize },
+                { text: extra.description || '-', fontSize: tableFontSize },
+                { text: `Rs. ${extra.amount.toLocaleString()}/-`, fontSize: tableFontSize }
             ]);
             totalAmount += extra.amount;
         });
@@ -588,50 +705,68 @@ function createPDFDocDefinition(data) {
     
     // Add total row
     tableBody.push([
-        { text: 'Total Amount', bold: true, fillColor: '#fbbf24', alignment: 'center' },
-        { text: '-', bold: true, fillColor: '#fbbf24', alignment: 'center' },
-        { text: `Rs. ${totalAmount.toLocaleString()}/-`, bold: true, fillColor: '#fbbf24', alignment: 'center' }
+        { text: 'Total Amount', bold: true, fillColor: '#fbbf24', alignment: 'center', fontSize: tableFontSize },
+        { text: '-', bold: true, fillColor: '#fbbf24', alignment: 'center', fontSize: tableFontSize },
+        { text: `Rs. ${totalAmount.toLocaleString()}/-`, bold: true, fillColor: '#fbbf24', alignment: 'center', fontSize: tableFontSize }
     ]);
     
     const docDefinition = {
         pageSize: 'A4',
-        pageMargins: [40, 40, 40, 40],
+        pageMargins: mobile ? [20, 20, 20, 20] : [40, 40, 40, 40],
         content: [
-            // Header
+            // Header with background table for mobile compatibility
             {
-                text: 'JHA TRAVELS',
-                fontSize: 24,
-                bold: true,
-                alignment: 'center',
-                color: 'white',
-                background: '#1e3a8a',
-                margin: [0, 0, 0, 5]
-            },
-            {
-                text: '"We Know Journey, Makes Memories"',
-                fontSize: 12,
-                italics: true,
-                alignment: 'center',
-                color: 'white',
-                background: '#1e3a8a',
+                table: {
+                    widths: ['*'],
+                    body: [
+                        [{
+                            text: 'JHA TRAVELS',
+                            fontSize: headerFontSize,
+                            bold: true,
+                            alignment: 'center',
+                            color: 'white',
+                            fillColor: '#1e3a8a',
+                            border: [false, false, false, false],
+                            margin: [0, 10, 0, 5]
+                        }],
+                        [{
+                            text: '"We Know Journey, Makes Memories"',
+                            fontSize: taglineFontSize,
+                            italics: true,
+                            alignment: 'center',
+                            color: 'white',
+                            fillColor: '#1e3a8a',
+                            border: [false, false, false, false],
+                            margin: [0, 0, 0, 10]
+                        }]
+                    ]
+                },
+                layout: 'noBorders',
                 margin: [0, 0, 0, 15]
             },
             
             // Company Information
             {
-                text: 'Company Information',
-                fontSize: 12,
-                bold: true,
-                alignment: 'center',
-                fillColor: '#f8f9fa',
-                margin: [0, 10, 0, 5]
+                table: {
+                    widths: ['*'],
+                    body: [
+                        [{
+                            text: 'Company Information',
+                            fontSize: sectionFontSize,
+                            bold: true,
+                            alignment: 'center',
+                            fillColor: '#f8f9fa',
+                            margin: [0, 8, 0, 8]
+                        }]
+                    ]
+                },
+                margin: [0, 0, 0, 5]
             },
             {
                 text: [
-                    'Address: Hatiara Bypass Road, Jheel Bagan, Sardarpara, Kolkata - 700157\n',
-                    'Phone: 9051066842 | 9830466842'
+                    { text: 'Address: Hatiara Bypass Road, Jheel Bagan, Sardarpara, Kolkata - 700157\n', fontSize: textFontSize },
+                    { text: 'Phone: 9051066842 | 9830466842', fontSize: textFontSize }
                 ],
-                fontSize: 10,
                 alignment: 'center',
                 margin: [0, 0, 0, 15]
             },
@@ -639,8 +774,8 @@ function createPDFDocDefinition(data) {
             // Customer Details and Date
             {
                 columns: [
-                    { text: 'Customer Details', fontSize: 14, bold: true },
-                    { text: `Date: ${date}`, fontSize: 14, bold: true, alignment: 'right' }
+                    { text: 'Customer Details', fontSize: sectionFontSize, bold: true },
+                    { text: `Date: ${date}`, fontSize: sectionFontSize, bold: true, alignment: 'right' }
                 ],
                 margin: [0, 0, 0, 10]
             },
@@ -648,18 +783,17 @@ function createPDFDocDefinition(data) {
             // Customer Info
             {
                 text: [
-                    `Name: ${customer.name}\n`,
-                    `Phone: ${customer.phone}\n`,
-                    `Address: ${customer.address}`
+                    { text: `Name: ${customer.name}\n`, fontSize: textFontSize },
+                    { text: `Phone: ${customer.phone}\n`, fontSize: textFontSize },
+                    { text: `Address: ${customer.address}`, fontSize: textFontSize }
                 ],
-                fontSize: 11,
                 margin: [0, 0, 0, 15]
             },
             
             // Billing Details Header
             {
                 text: 'Billing Details',
-                fontSize: 14,
+                fontSize: sectionFontSize,
                 bold: true,
                 margin: [0, 0, 0, 10]
             },
@@ -668,30 +802,37 @@ function createPDFDocDefinition(data) {
             {
                 table: {
                     headerRows: 1,
-                    widths: ['25%', '50%', '25%'],
+                    widths: mobile ? ['30%', '45%', '25%'] : ['25%', '50%', '25%'],
                     body: tableBody
                 },
-                margin: [0, 0, 0, 20]
+                layout: {
+                    hLineWidth: function (i, node) { return 1; },
+                    vLineWidth: function (i, node) { return 1; },
+                    hLineColor: function (i, node) { return '#000'; },
+                    vLineColor: function (i, node) { return '#000'; }
+                },
+                margin: [0, 0, 0, 15]
             },
             
             // Signature
             {
                 text: 'Signature: ..................................................',
                 alignment: 'right',
-                margin: [0, 20, 0, 20]
+                fontSize: textFontSize,
+                margin: [0, 15, 0, 15]
             },
             
             // Footer
             {
                 text: 'Thank you for choosing JHA TRAVELS! We look forward to serving you again.',
-                fontSize: 11,
+                fontSize: textFontSize,
                 bold: true,
                 alignment: 'center'
             }
         ]
     };
     
-    console.log('PDF document definition created successfully');
+    console.log('PDF document definition created successfully for', mobile ? 'mobile' : 'desktop');
     return docDefinition;
 }
 
