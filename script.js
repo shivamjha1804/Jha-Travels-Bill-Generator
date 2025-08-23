@@ -452,9 +452,10 @@ function generatePDF() {
     printStyle.innerHTML = `
         @media print {
             * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }
-            body { background: white !important; margin: 0 !important; padding: 10mm !important; }
+            body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 12px !important; }
             .preview-actions, .pdf-actions { display: none !important; }
-            @page { size: A4; margin: 0; }
+            .invoice-preview { transform: scale(0.85) !important; transform-origin: top left !important; max-height: 250mm !important; overflow: hidden !important; }
+            @page { size: A4; margin: 10mm; }
         }
     `;
     document.head.appendChild(printStyle);
@@ -489,9 +490,10 @@ function downloadPDF() {
     printStyle.innerHTML = `
         @media print {
             * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }
-            body { background: white !important; margin: 0 !important; padding: 10mm !important; }
+            body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 12px !important; }
             .preview-actions, .pdf-actions { display: none !important; }
-            @page { size: A4; margin: 0; }
+            .invoice-preview { transform: scale(0.85) !important; transform-origin: top left !important; max-height: 250mm !important; overflow: hidden !important; }
+            @page { size: A4; margin: 10mm; }
         }
     `;
     document.head.appendChild(printStyle);
