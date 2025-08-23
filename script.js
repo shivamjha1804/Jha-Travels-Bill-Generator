@@ -592,23 +592,21 @@ function isSafari() {
     return /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor);
 }
 
-// Create PDFMake document definition optimized for all devices
+// Create universal PDFMake document definition that works great on all devices
 function createPDFDocDefinition(data) {
-    console.log('Creating PDF document definition for:', data);
-    console.log('Device info - Mobile:', isMobile(), 'iOS:', isIOS(), 'Safari:', isSafari());
+    console.log('Creating universal PDF document definition for:', data);
     
     const { customer, billType, billData, extras, date } = data;
-    const mobile = isMobile();
     
     let totalAmount = 0;
     let tableBody = [];
     
-    // Mobile-optimized sizes - make fonts LARGER for mobile viewing, not smaller
-    const headerFontSize = mobile ? 28 : 24;  // Larger header on mobile for readability
-    const taglineFontSize = mobile ? 14 : 12;  // Larger tagline on mobile
-    const sectionFontSize = mobile ? 16 : 14;  // Larger sections on mobile  
-    const textFontSize = mobile ? 13 : 11;     // Larger text on mobile
-    const tableFontSize = mobile ? 12 : 10;    // Larger table text on mobile
+    // Universal sizes that work well on both mobile and desktop
+    const headerFontSize = 22;      // Good for both mobile and desktop
+    const taglineFontSize = 11;     // Readable on all devices  
+    const sectionFontSize = 13;     // Clear on all screens
+    const textFontSize = 10;        // Standard readable size
+    const tableFontSize = 9;        // Fits well in tables on all devices
     
     // Table header with mobile optimization
     tableBody.push([
@@ -703,7 +701,7 @@ function createPDFDocDefinition(data) {
     
     const docDefinition = {
         pageSize: 'A4',
-        pageMargins: mobile ? [20, 20, 20, 20] : [40, 40, 40, 40],
+        pageMargins: [30, 30, 30, 30],  // Universal margin for all devices
         content: [
             // Header with background table for mobile compatibility
             {
@@ -793,7 +791,7 @@ function createPDFDocDefinition(data) {
             {
                 table: {
                     headerRows: 1,
-                    widths: mobile ? ['30%', '45%', '25%'] : ['25%', '50%', '25%'],
+                    widths: ['28%', '47%', '25%'],  // Universal column widths for all devices
                     body: tableBody
                 },
                 layout: {
@@ -823,7 +821,7 @@ function createPDFDocDefinition(data) {
         ]
     };
     
-    console.log('PDF document definition created successfully for', mobile ? 'mobile' : 'desktop');
+    console.log('Universal PDF document definition created successfully');
     return docDefinition;
 }
 
