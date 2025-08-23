@@ -451,11 +451,11 @@ function generatePDF() {
     printStyle.id = 'print-style';
     printStyle.innerHTML = `
         @media print {
-            * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; margin: 0 !important; padding: 0 !important; line-height: 1.2 !important; }
-            body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 10px !important; }
+            * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }
+            body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 14px !important; }
             .preview-actions, .pdf-actions { display: none !important; }
-            .invoice-preview { transform: scale(0.75) !important; transform-origin: top left !important; max-height: 277mm !important; height: 277mm !important; overflow: hidden !important; page-break-inside: avoid !important; }
-            @page { size: A4; margin: 5mm; }
+            .invoice-preview { page-break-inside: avoid !important; width: 100% !important; height: auto !important; }
+            @page { size: A4; margin: 15mm 10mm; }
         }
     `;
     document.head.appendChild(printStyle);
@@ -489,11 +489,11 @@ function downloadPDF() {
     printStyle.id = 'download-print-style';
     printStyle.innerHTML = `
         @media print {
-            * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; margin: 0 !important; padding: 0 !important; line-height: 1.2 !important; }
-            body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 10px !important; }
+            * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }
+            body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 14px !important; }
             .preview-actions, .pdf-actions { display: none !important; }
-            .invoice-preview { transform: scale(0.75) !important; transform-origin: top left !important; max-height: 277mm !important; height: 277mm !important; overflow: hidden !important; page-break-inside: avoid !important; }
-            @page { size: A4; margin: 5mm; }
+            .invoice-preview { page-break-inside: avoid !important; width: 100% !important; height: auto !important; }
+            @page { size: A4; margin: 15mm 10mm; }
         }
     `;
     document.head.appendChild(printStyle);
