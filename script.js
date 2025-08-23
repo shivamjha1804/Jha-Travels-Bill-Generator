@@ -453,39 +453,19 @@ function generatePDF() {
         @media print {
             @page { 
                 size: A4; 
-                margin: 10mm;
-                @top-left-corner { content: "" !important; }
-                @top-left { content: "" !important; }
-                @top-center { content: "" !important; }
-                @top-right { content: "" !important; }
-                @top-right-corner { content: "" !important; }
-                @bottom-left-corner { content: "" !important; }
-                @bottom-left { content: "" !important; }
-                @bottom-center { content: "" !important; }
-                @bottom-right { content: "" !important; }
-                @bottom-right-corner { content: "" !important; }
-                @left-top { content: "" !important; }
-                @left-middle { content: "" !important; }
-                @left-bottom { content: "" !important; }
-                @right-top { content: "" !important; }
-                @right-middle { content: "" !important; }
-                @right-bottom { content: "" !important; }
-            }
-            @page:first {
-                @bottom-left { content: none !important; }
-                @bottom-center { content: none !important; }
-                @bottom-right { content: none !important; }
-            }
-            @page:last {
-                @bottom-left { content: none !important; }
-                @bottom-center { content: none !important; }
-                @bottom-right { content: none !important; }
+                margin: 0;
+                @top-left { content: "" !important; display: none !important; }
+                @top-center { content: "" !important; display: none !important; }
+                @top-right { content: "" !important; display: none !important; }
+                @bottom-left { content: "" !important; display: none !important; }
+                @bottom-center { content: "" !important; display: none !important; }
+                @bottom-right { content: "" !important; display: none !important; }
             }
             * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; page-break-inside: avoid !important; page-break-after: avoid !important; page-break-before: avoid !important; }
             html { margin: 0 !important; padding: 0 !important; }
             body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 14px !important; }
             .preview-actions, .pdf-actions { display: none !important; }
-            .invoice-preview { page-break-inside: avoid !important; page-break-after: avoid !important; width: 100% !important; height: auto !important; max-height: 277mm !important; overflow: hidden !important; margin: 0 !important; transform: none !important; }
+            .invoice-preview { page-break-inside: avoid !important; page-break-after: avoid !important; width: calc(100% - 20mm) !important; height: auto !important; max-height: 277mm !important; overflow: hidden !important; margin: 10mm !important; transform: none !important; }
         }
     `;
     document.head.appendChild(printStyle);
@@ -521,39 +501,19 @@ function downloadPDF() {
         @media print {
             @page { 
                 size: A4; 
-                margin: 10mm;
-                @top-left-corner { content: "" !important; }
-                @top-left { content: "" !important; }
-                @top-center { content: "" !important; }
-                @top-right { content: "" !important; }
-                @top-right-corner { content: "" !important; }
-                @bottom-left-corner { content: "" !important; }
-                @bottom-left { content: "" !important; }
-                @bottom-center { content: "" !important; }
-                @bottom-right { content: "" !important; }
-                @bottom-right-corner { content: "" !important; }
-                @left-top { content: "" !important; }
-                @left-middle { content: "" !important; }
-                @left-bottom { content: "" !important; }
-                @right-top { content: "" !important; }
-                @right-middle { content: "" !important; }
-                @right-bottom { content: "" !important; }
-            }
-            @page:first {
-                @bottom-left { content: none !important; }
-                @bottom-center { content: none !important; }
-                @bottom-right { content: none !important; }
-            }
-            @page:last {
-                @bottom-left { content: none !important; }
-                @bottom-center { content: none !important; }
-                @bottom-right { content: none !important; }
+                margin: 0;
+                @top-left { content: "" !important; display: none !important; }
+                @top-center { content: "" !important; display: none !important; }
+                @top-right { content: "" !important; display: none !important; }
+                @bottom-left { content: "" !important; display: none !important; }
+                @bottom-center { content: "" !important; display: none !important; }
+                @bottom-right { content: "" !important; display: none !important; }
             }
             * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; page-break-inside: avoid !important; page-break-after: avoid !important; page-break-before: avoid !important; }
             html { margin: 0 !important; padding: 0 !important; }
             body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 14px !important; }
             .preview-actions, .pdf-actions { display: none !important; }
-            .invoice-preview { page-break-inside: avoid !important; page-break-after: avoid !important; width: 100% !important; height: auto !important; max-height: 277mm !important; overflow: hidden !important; margin: 0 !important; transform: none !important; }
+            .invoice-preview { page-break-inside: avoid !important; page-break-after: avoid !important; width: calc(100% - 20mm) !important; height: auto !important; max-height: 277mm !important; overflow: hidden !important; margin: 10mm !important; transform: none !important; }
         }
     `;
     document.head.appendChild(printStyle);
@@ -578,21 +538,26 @@ function downloadPDF() {
 }
 
 function sendWhatsApp() {
-    const phoneNumber = currentInvoiceData.customer.phone.replace(/\D/g, ''); // Remove non-digits
-    const customerName = currentInvoiceData.customer.name;
-    const date = currentInvoiceData.date;
-    const totalAmount = calculateTotalAmount();
+    // First generate and download the PDF
+    downloadPDF();
     
-    let serviceType = '';
-    if (currentInvoiceData.billType === 'pickup-drop') {
-        serviceType = `Pickup-Drop Service from ${currentInvoiceData.billData.pickup} to ${currentInvoiceData.billData.drop}`;
-    } else if (currentInvoiceData.billType === 'duration') {
-        serviceType = `${currentInvoiceData.billData.hours} Hours Service`;
-    } else if (currentInvoiceData.billType === 'distance') {
-        serviceType = `${currentInvoiceData.billData.distance} KM Service`;
-    }
-    
-    const message = `Hi ${customerName}!
+    // Small delay to ensure PDF generation starts
+    setTimeout(() => {
+        const phoneNumber = currentInvoiceData.customer.phone.replace(/\D/g, ''); // Remove non-digits
+        const customerName = currentInvoiceData.customer.name;
+        const date = currentInvoiceData.date;
+        const totalAmount = calculateTotalAmount();
+        
+        let serviceType = '';
+        if (currentInvoiceData.billType === 'pickup-drop') {
+            serviceType = `Pickup-Drop Service from ${currentInvoiceData.billData.pickup} to ${currentInvoiceData.billData.drop}`;
+        } else if (currentInvoiceData.billType === 'duration') {
+            serviceType = `${currentInvoiceData.billData.hours} Hours Service`;
+        } else if (currentInvoiceData.billType === 'distance') {
+            serviceType = `${currentInvoiceData.billData.distance} KM Service`;
+        }
+        
+        const message = `Hi ${customerName}!
 
 🚗 *JHA TRAVELS* - Invoice
 
@@ -604,12 +569,18 @@ Thank you for choosing JHA Travels!
 "We Know Journey, Makes Memories"
 
 📞 Contact: 9051066842 | 9830466842
-📍 Address: Hatiara Bypass Road, Jheel Bagan, Sardarpara, Kolkata - 700157`;
+📍 Address: Hatiara Bypass Road, Jheel Bagan, Sardarpara, Kolkata - 700157
 
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappURL = `https://wa.me/91${phoneNumber}?text=${encodedMessage}`;
-    
-    window.open(whatsappURL, '_blank');
+📄 *Invoice PDF has been downloaded - please attach it to this chat*`;
+
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappURL = `https://wa.me/91${phoneNumber}?text=${encodedMessage}`;
+        
+        window.open(whatsappURL, '_blank');
+        
+        // Show helpful message to user
+        alert('📱 WhatsApp opened with message!\n📄 PDF downloaded - please attach it to the chat manually.');
+    }, 1000);
 }
 
 function calculateTotalAmount() {
