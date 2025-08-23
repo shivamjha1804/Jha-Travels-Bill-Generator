@@ -116,6 +116,41 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script>
+        // Wait for DOM and scripts to load
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                console.log('Checking pdfMake availability...');
+                console.log('typeof pdfMake:', typeof pdfMake);
+                console.log('window.pdfMake:', window.pdfMake);
+                
+                if (typeof pdfMake !== 'undefined') {
+                    console.log('✅ PDFMake is available');
+                    // Test creating a simple PDF
+                    try {
+                        const testDoc = { content: ['Hello World'] };
+                        const pdfDoc = pdfMake.createPdf(testDoc);
+                        console.log('✅ PDFMake test PDF created successfully');
+                    } catch (e) {
+                        console.error('❌ PDFMake test failed:', e);
+                    }
+                } else {
+                    console.error('❌ PDFMake is not available');
+                    // Try loading fallback
+                    console.log('Loading pdfMake fallback...');
+                    const script1 = document.createElement('script');
+                    script1.src = 'https://unpkg.com/pdfmake@0.2.7/build/pdfmake.min.js';
+                    document.head.appendChild(script1);
+                    
+                    script1.onload = function() {
+                        const script2 = document.createElement('script');
+                        script2.src = 'https://unpkg.com/pdfmake@0.2.7/build/vfs_fonts.js';
+                        document.head.appendChild(script2);
+                    };
+                }
+            }, 1000);
+        });
+    </script>
     <script src="script.js"></script>
     <script>
         // Register service worker for offline functionality

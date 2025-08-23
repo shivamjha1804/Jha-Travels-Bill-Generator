@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDFMake Test</title>
+</head>
+<body>
+    <h1>PDFMake Test</h1>
+    <button onclick="testPDF()">Test PDF Generation</button>
+    <button onclick="testDownload()">Test PDF Download</button>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    
+    <script>
+        function testPDF() {
+            console.log('Testing PDF generation...');
+            
+            if (typeof pdfMake === 'undefined') {
+                alert('PDFMake is not loaded!');
+                return;
+            }
+            
+            const docDefinition = {
+                content: [
+                    'Hello World',
+                    { text: 'This is a test PDF', fontSize: 16, bold: true }
+                ]
+            };
+            
+            try {
+                pdfMake.createPdf(docDefinition).getBlob((blob) => {
+                    console.log('PDF blob created:', blob);
+                    const url = URL.createObjectURL(blob);
+                    window.open(url, '_blank');
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        function testDownload() {
+            console.log('Testing PDF download...');
+            
+            if (typeof pdfMake === 'undefined') {
+                alert('PDFMake is not loaded!');
+                return;
+            }
+            
+            const docDefinition = {
+                content: [
+                    'Hello World Download Test',
+                    { text: 'This PDF should download automatically', fontSize: 16, bold: true }
+                ]
+            };
+            
+            try {
+                pdfMake.createPdf(docDefinition).download('test.pdf');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        // Check if pdfMake loaded
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                console.log('PDFMake available:', typeof pdfMake !== 'undefined');
+                if (typeof pdfMake !== 'undefined') {
+                    console.log('✅ PDFMake loaded successfully');
+                } else {
+                    console.error('❌ PDFMake failed to load');
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
