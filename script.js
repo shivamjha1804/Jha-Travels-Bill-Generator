@@ -8,14 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('invoiceDate').value = today;
     
-    // Check if pdfMake is loaded
-    setTimeout(() => {
-        if (typeof pdfMake === 'undefined') {
-            console.error('PDFMake failed to load');
-        } else {
-            console.log('PDFMake loaded successfully');
-        }
-    }, 2000);
+    console.log('✅ Using built-in browser PDF generation - reliable and simple!');
 });
 
 function selectBillType(type) {
@@ -447,383 +440,63 @@ function generateInvoiceHTML(data) {
     `;
 }
 
-// Universal PDF generation using PDFMake - works perfectly on all browsers
+// Simple built-in browser PDF generation using window.print()
 function generatePDF() {
-    console.log('generatePDF called');
+    console.log('generatePDF called - using built-in browser PDF');
     
     if (!currentInvoiceData) {
         alert('No invoice data available');
         return;
     }
     
-    // Check if pdfMake is loaded
-    if (typeof pdfMake === 'undefined') {
-        alert('PDF library is not loaded. Please refresh the page and try again.');
-        console.error('pdfMake is not defined');
-        return;
-    }
-    
     try {
-        const docDefinition = createPDFDocDefinition(currentInvoiceData);
-        console.log('docDefinition created:', docDefinition);
-        
         // Show PDF actions
         const pdfActions = document.getElementById('pdfActions');
         pdfActions.style.display = 'block';
         
-        // Create and show PDF preview
-        pdfMake.createPdf(docDefinition).getBlob((blob) => {
-            console.log('PDF blob created:', blob);
-            const url = URL.createObjectURL(blob);
-            window.open(url, '_blank');
-        });
+        // Use built-in browser print to PDF
+        window.print();
+        
+        console.log('Browser print dialog opened');
     } catch (error) {
         console.error('Error generating PDF:', error);
         alert('Error generating PDF: ' + error.message);
     }
 }
 
-// Universal PDF download using PDFMake - works perfectly on all browsers
+// Simple built-in browser PDF download using window.print()
 function downloadPDF() {
-    console.log('downloadPDF called');
-    console.log('Device detection - iOS:', isIOS(), 'Safari:', isSafari(), 'Mobile:', isMobile());
+    console.log('downloadPDF called - using built-in browser print');
     
     if (!currentInvoiceData) {
         alert('No invoice data available');
         return;
     }
     
-    // Check if pdfMake is loaded
-    if (typeof pdfMake === 'undefined') {
-        alert('PDF library is not loaded. Please refresh the page and try again.');
-        console.error('pdfMake is not defined');
-        return;
-    }
-    
     try {
-        const docDefinition = createPDFDocDefinition(currentInvoiceData);
         const customerName = currentInvoiceData.customer.name.replace(/\s+/g, '_');
         const date = currentInvoiceData.date.replace(/\//g, '_');
-        const filename = `JHA_TRAVELS_${customerName}_${date}.pdf`;
         
-        console.log('Downloading PDF:', filename);
+        // Set document title for PDF filename
+        const originalTitle = document.title;
+        document.title = `JHA_TRAVELS_${customerName}_${date}`;
         
-        // iOS Safari and mobile handling
-        if (isIOS()) {
-            console.log('Using iOS download method');
-            
-            pdfMake.createPdf(docDefinition).getBlob((blob) => {
-                console.log('PDF blob created for iOS:', blob);
-                
-                // Create download URL
-                const url = URL.createObjectURL(blob);
-                
-                // For iOS 13+ with Share API support
-                if (navigator.share) {
-                    console.log('Using iOS Share API');
-                    try {
-                        const file = new File([blob], filename, { type: 'application/pdf' });
-                        navigator.share({
-                            files: [file],
-                            title: 'JHA Travels Invoice'
-                        }).then(() => {
-                            console.log('iOS Share successful');
-                            URL.revokeObjectURL(url);
-                        }).catch((error) => {
-                            console.log('iOS Share failed, opening PDF:', error);
-                            // Open PDF in new tab with instructions
-                            const newWindow = window.open(url, '_blank');
-                            if (newWindow) {
-                                // Show instructions after a brief delay
-                                setTimeout(() => {
-                                    alert('To save this PDF on iPhone:\n\n1. Tap the Share button (square with arrow)\n2. Select "Save to Files"\n3. Choose your preferred location\n\nOr tap and hold the PDF and select "Save to Files"');
-                                }, 1500);
-                            }
-                        });
-                    } catch (shareError) {
-                        console.log('Share API error:', shareError);
-                        openPDFWithInstructions(url);
-                    }
-                } else {
-                    console.log('No Share API, opening PDF with instructions');
-                    openPDFWithInstructions(url);
-                }
-            });
-        } else {
-            // Standard download for non-iOS devices
-            console.log('Using standard download method');
-            pdfMake.createPdf(docDefinition).download(filename);
-        }
+        // Use built-in browser print to PDF
+        window.print();
+        
+        // Restore original title after a delay
+        setTimeout(() => {
+            document.title = originalTitle;
+        }, 2000);
+        
+        console.log('Browser print dialog opened for download');
     } catch (error) {
         console.error('Error downloading PDF:', error);
         alert('Error downloading PDF: ' + error.message);
     }
 }
 
-// Helper function to open PDF with instructions for iOS
-function openPDFWithInstructions(url) {
-    const newWindow = window.open(url, '_blank');
-    if (newWindow) {
-        // Show clear instructions for iOS users
-        setTimeout(() => {
-            alert('To save this PDF on iPhone/iPad:\n\n📱 Method 1 (Recommended):\n1. Tap the Share button (⬆️)\n2. Select "Save to Files"\n3. Choose location and tap "Save"\n\n📱 Method 2:\n1. Tap and hold the PDF\n2. Select "Save to Files" from menu\n3. Choose location and tap "Save"\n\n💡 The PDF will be saved to your Files app');
-        }, 1500);
-    } else {
-        // Popup blocked - provide alternative
-        alert('Popup blocked! Please:\n\n1. Allow popups for this site\n2. Try again\n\nOr use Chrome browser for direct downloads');
-    }
-    
-    // Clean up URL after delay
-    setTimeout(() => {
-        URL.revokeObjectURL(url);
-    }, 30000); // Keep URL alive longer for iOS
-}
-
-// Device detection functions
-function isMobile() {
-    return /iPhone|iPad|iPod|Android|BlackBerry|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
-}
-
-function isIOS() {
-    return /iPad|iPhone|iPod/.test(navigator.userAgent);
-}
-
-function isSafari() {
-    return /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor);
-}
-
-// Create universal PDFMake document definition that works great on all devices
-function createPDFDocDefinition(data) {
-    console.log('Creating universal PDF document definition for:', data);
-    
-    const { customer, billType, billData, extras, date } = data;
-    
-    let totalAmount = 0;
-    let tableBody = [];
-    
-    // Universal sizes that work well on both mobile and desktop
-    const headerFontSize = 22;      // Good for both mobile and desktop
-    const taglineFontSize = 11;     // Readable on all devices  
-    const sectionFontSize = 13;     // Clear on all screens
-    const textFontSize = 10;        // Standard readable size
-    const tableFontSize = 9;        // Fits well in tables on all devices
-    
-    // Table header with mobile optimization
-    tableBody.push([
-        { 
-            text: 'Description', 
-            bold: true, 
-            fillColor: '#1e3a8a', 
-            color: 'white', 
-            alignment: 'center',
-            fontSize: tableFontSize
-        },
-        { 
-            text: billType === 'pickup-drop' ? 'Address' : 'Value', 
-            bold: true, 
-            fillColor: '#1e3a8a', 
-            color: 'white', 
-            alignment: 'center',
-            fontSize: tableFontSize
-        },
-        { 
-            text: 'Total', 
-            bold: true, 
-            fillColor: '#1e3a8a', 
-            color: 'white', 
-            alignment: 'center',
-            fontSize: tableFontSize
-        }
-    ]);
-    
-    // Build table rows based on bill type
-    if (billType === 'pickup-drop') {
-        totalAmount = parseFloat(billData.amount) || 0;
-        tableBody.push([
-            { text: 'Pick-up', fontSize: tableFontSize },
-            { text: billData.pickup, fontSize: tableFontSize },
-            { text: `Rs. ${totalAmount.toLocaleString()}/-`, rowSpan: 2, alignment: 'center', fontSize: tableFontSize }
-        ]);
-        tableBody.push([
-            { text: 'Drop', fontSize: tableFontSize },
-            { text: billData.drop, fontSize: tableFontSize },
-            ''
-        ]);
-    } else if (billType === 'duration') {
-        totalAmount = billData.hours * billData.hourlyRate;
-        let timeDetails = `${billData.hours} Hours`;
-        if (billData.distance) timeDetails += ` (${billData.distance} km)`;
-        
-        tableBody.push([
-            { text: 'Time', fontSize: tableFontSize },
-            { text: timeDetails, fontSize: tableFontSize },
-            { text: `${billData.hours} Hours`, fontSize: tableFontSize }
-        ]);
-        tableBody.push([
-            { text: 'Per Hour Rate', fontSize: tableFontSize },
-            { text: `Rs. ${billData.hourlyRate.toLocaleString()}/-`, fontSize: tableFontSize },
-            { text: `Rs ${billData.hourlyRate.toLocaleString()}/-`, fontSize: tableFontSize }
-        ]);
-    } else if (billType === 'distance') {
-        totalAmount = billData.distance * billData.perKmRate;
-        let distanceDetails = `${billData.distance} km`;
-        
-        tableBody.push([
-            { text: 'Distance', fontSize: tableFontSize },
-            { text: distanceDetails, fontSize: tableFontSize },
-            { text: `${billData.distance} km`, fontSize: tableFontSize }
-        ]);
-        tableBody.push([
-            { text: 'Per Km Rate', fontSize: tableFontSize },
-            { text: `Rs. ${billData.perKmRate.toLocaleString()}/-`, fontSize: tableFontSize },
-            { text: `Rs ${billData.perKmRate.toLocaleString()}/-`, fontSize: tableFontSize }
-        ]);
-    }
-    
-    // Add extras
-    if (extras && extras.length > 0) {
-        extras.forEach(extra => {
-            tableBody.push([
-                { text: `Extra (${extra.reason})`, fontSize: tableFontSize },
-                { text: extra.description || '-', fontSize: tableFontSize },
-                { text: `Rs. ${extra.amount.toLocaleString()}/-`, fontSize: tableFontSize }
-            ]);
-            totalAmount += extra.amount;
-        });
-    }
-    
-    // Add total row
-    tableBody.push([
-        { text: 'Total Amount', bold: true, fillColor: '#fbbf24', alignment: 'center', fontSize: tableFontSize },
-        { text: '-', bold: true, fillColor: '#fbbf24', alignment: 'center', fontSize: tableFontSize },
-        { text: `Rs. ${totalAmount.toLocaleString()}/-`, bold: true, fillColor: '#fbbf24', alignment: 'center', fontSize: tableFontSize }
-    ]);
-    
-    const docDefinition = {
-        pageSize: 'A4',
-        pageMargins: [30, 30, 30, 30],  // Universal margin for all devices
-        content: [
-            // Header with background table for mobile compatibility
-            {
-                table: {
-                    widths: ['*'],
-                    body: [
-                        [{
-                            text: 'JHA TRAVELS',
-                            fontSize: headerFontSize,
-                            bold: true,
-                            alignment: 'center',
-                            color: 'white',
-                            fillColor: '#1e3a8a',
-                            border: [false, false, false, false],
-                            margin: [0, 10, 0, 5]
-                        }],
-                        [{
-                            text: '"We Know Journey, Makes Memories"',
-                            fontSize: taglineFontSize,
-                            italics: true,
-                            alignment: 'center',
-                            color: 'white',
-                            fillColor: '#1e3a8a',
-                            border: [false, false, false, false],
-                            margin: [0, 0, 0, 10]
-                        }]
-                    ]
-                },
-                layout: 'noBorders',
-                margin: [0, 0, 0, 15]
-            },
-            
-            // Company Information
-            {
-                table: {
-                    widths: ['*'],
-                    body: [
-                        [{
-                            text: 'Company Information',
-                            fontSize: sectionFontSize,
-                            bold: true,
-                            alignment: 'center',
-                            fillColor: '#f8f9fa',
-                            margin: [0, 8, 0, 8]
-                        }]
-                    ]
-                },
-                margin: [0, 0, 0, 5]
-            },
-            {
-                text: [
-                    { text: 'Address: Hatiara Bypass Road, Jheel Bagan, Sardarpara, Kolkata - 700157\n', fontSize: textFontSize },
-                    { text: 'Phone: 9051066842 | 9830466842', fontSize: textFontSize }
-                ],
-                alignment: 'center',
-                margin: [0, 0, 0, 15]
-            },
-            
-            // Customer Details and Date
-            {
-                columns: [
-                    { text: 'Customer Details', fontSize: sectionFontSize, bold: true },
-                    { text: `Date: ${date}`, fontSize: sectionFontSize, bold: true, alignment: 'right' }
-                ],
-                margin: [0, 0, 0, 10]
-            },
-            
-            // Customer Info
-            {
-                text: [
-                    { text: `Name: ${customer.name}\n`, fontSize: textFontSize },
-                    { text: `Phone: ${customer.phone}\n`, fontSize: textFontSize },
-                    { text: `Address: ${customer.address}`, fontSize: textFontSize }
-                ],
-                margin: [0, 0, 0, 15]
-            },
-            
-            // Billing Details Header
-            {
-                text: 'Billing Details',
-                fontSize: sectionFontSize,
-                bold: true,
-                margin: [0, 0, 0, 10]
-            },
-            
-            // Billing Table
-            {
-                table: {
-                    headerRows: 1,
-                    widths: ['28%', '47%', '25%'],  // Universal column widths for all devices
-                    body: tableBody
-                },
-                layout: {
-                    hLineWidth: function (i, node) { return 1; },
-                    vLineWidth: function (i, node) { return 1; },
-                    hLineColor: function (i, node) { return '#000'; },
-                    vLineColor: function (i, node) { return '#000'; }
-                },
-                margin: [0, 0, 0, 15]
-            },
-            
-            // Signature
-            {
-                text: 'Signature: ..................................................',
-                alignment: 'right',
-                fontSize: textFontSize,
-                margin: [0, 15, 0, 15]
-            },
-            
-            // Footer
-            {
-                text: 'Thank you for choosing JHA TRAVELS! We look forward to serving you again.',
-                fontSize: textFontSize,
-                bold: true,
-                alignment: 'center'
-            }
-        ]
-    };
-    
-    console.log('Universal PDF document definition created successfully');
-    return docDefinition;
-}
+// Built-in browser PDF generation - no external packages needed!
 
 function sendWhatsApp() {
     const phoneNumber = currentInvoiceData.customer.phone.replace(/\D/g, ''); // Remove non-digits
