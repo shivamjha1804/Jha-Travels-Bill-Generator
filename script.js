@@ -435,7 +435,11 @@ function generateInvoiceHTML(data) {
         </div>
         
         <div class="invoice-footer">
-            <p>Thank you for choosing JHA TRAVELS! We look forward to serving you again.</p>
+            <p>Thank you for choosing JHA TRAVELS!</p>
+        </div>
+        
+        <div class="footer-text">
+            <p>We look forward to serving you again.</p>
         </div>
     `;
 }
