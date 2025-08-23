@@ -788,12 +788,29 @@ input[type="datetime-local"]:not(:placeholder-shown) {
 @media print {
     @page {
         size: A4;
-        margin: 15mm 10mm;
-        /* Remove headers and footers */
-        margin-top: 0;
-        margin-bottom: 0;
-        
-        /* iOS Safari specific */
+        margin: 0;
+        /* Aggressive header/footer removal */
+        @top-left-corner { content: ""; }
+        @top-left { content: ""; }
+        @top-center { content: ""; }
+        @top-right { content: ""; }
+        @top-right-corner { content: ""; }
+        @bottom-left-corner { content: ""; }
+        @bottom-left { content: ""; }
+        @bottom-center { content: ""; }
+        @bottom-right { content: ""; }
+        @bottom-right-corner { content: ""; }
+        @left-top { content: ""; }
+        @left-middle { content: ""; }
+        @left-bottom { content: ""; }
+        @right-top { content: ""; }
+        @right-middle { content: ""; }
+        @right-bottom { content: ""; }
+    }
+    
+    /* Mobile-specific page setup */
+    @page:first {
+        margin: 0;
         @top-left { content: ""; }
         @top-center { content: ""; }
         @top-right { content: ""; }
@@ -854,16 +871,19 @@ input[type="datetime-local"]:not(:placeholder-shown) {
     .invoice-preview {
         background: white !important;
         box-shadow: none !important;
-        margin: 0 !important;
+        margin: 10mm !important;
         padding: 0 !important;
         page-break-inside: avoid !important;
         page-break-after: avoid !important;
         page-break-before: avoid !important;
-        width: 100% !important;
+        width: calc(100% - 20mm) !important;
         height: auto !important;
-        max-height: 277mm !important;
+        max-height: 257mm !important;
         overflow: hidden !important;
-        transform: none !important;
+        transform: scale(0.9) !important;
+        transform-origin: top left !important;
+        position: relative !important;
+        z-index: 1000 !important;
     }
     
     /* Prevent all elements from creating page breaks */
@@ -871,6 +891,37 @@ input[type="datetime-local"]:not(:placeholder-shown) {
         page-break-inside: avoid !important;
         page-break-after: avoid !important;
         page-break-before: avoid !important;
+    }
+    
+    /* Mobile-specific adjustments */
+    @media print and (max-width: 768px) {
+        .invoice-preview {
+            transform: scale(0.8) !important;
+            max-height: 240mm !important;
+        }
+        
+        .invoice-header {
+            padding: 10px 0 !important;
+        }
+        
+        .invoice-header h1 {
+            font-size: 20px !important;
+        }
+        
+        .tagline {
+            font-size: 11px !important;
+        }
+        
+        .company-details p,
+        .customer-info p {
+            font-size: 11px !important;
+        }
+        
+        .billing-table th,
+        .billing-table td {
+            font-size: 11px !important;
+            padding: 4px 6px !important;
+        }
     }
     
     /* Invoice Header - Compact */
