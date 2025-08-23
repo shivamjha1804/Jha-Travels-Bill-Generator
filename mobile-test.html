@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile PDF Test - JHA Travels</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        button {
+            padding: 15px 20px;
+            margin: 10px;
+            font-size: 16px;
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .debug {
+            background: #f0f0f0;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mobile PDF Test</h1>
+    
+    <div class="info">
+        <h3>Device Info:</h3>
+        <p id="device-info">Loading...</p>
+    </div>
+    
+    <div class="debug">
+        <h3>Console Debug:</h3>
+        <div id="debug-log"></div>
+    </div>
+    
+    <button onclick="testSimplePDF()">Test Simple PDF</button>
+    <button onclick="testMobileOptimizedPDF()">Test Mobile Optimized PDF</button>
+    <button onclick="testInvoicePDF()">Test Full Invoice PDF</button>
+    <button onclick="clearLog()">Clear Debug Log</button>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    
+    <script>
+        // Debug logging
+        function debugLog(message) {
+            console.log(message);
+            const logDiv = document.getElementById('debug-log');
+            logDiv.innerHTML += `<p>${new Date().toLocaleTimeString()}: ${message}</p>`;
+        }
+        
+        function clearLog() {
+            document.getElementById('debug-log').innerHTML = '';
+        }
+        
+        // Device detection
+        function isMobile() {
+            return /iPhone|iPad|iPod|Android|BlackBerry|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+        }
+        
+        function isIOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent);
+        }
+        
+        function isSafari() {
+            return /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor);
+        }
+        
+        // Show device info
+        function showDeviceInfo() {
+            const info = {
+                userAgent: navigator.userAgent,
+                mobile: isMobile(),
+                iOS: isIOS(),
+                safari: isSafari(),
+                shareAPI: !!navigator.share,
+                canShare: !!navigator.canShare
+            };
+            
+            document.getElementById('device-info').innerHTML = 
+                `<strong>User Agent:</strong> ${info.userAgent}<br>
+                 <strong>Mobile:</strong> ${info.mobile}<br>
+                 <strong>iOS:</strong> ${info.iOS}<br>
+                 <strong>Safari:</strong> ${info.safari}<br>
+                 <strong>Share API:</strong> ${info.shareAPI}<br>
+                 <strong>Can Share:</strong> ${info.canShare}`;
+            
+            debugLog(`Device detection: Mobile=${info.mobile}, iOS=${info.iOS}, Safari=${info.safari}`);
+        }
+        
+        // Test 1: Simple PDF
+        function testSimplePDF() {
+            debugLog('Testing simple PDF...');
+            
+            if (typeof pdfMake === 'undefined') {
+                debugLog('ERROR: pdfMake not loaded!');
+                alert('PDFMake not loaded!');
+                return;
+            }
+            
+            const docDefinition = {
+                content: [
+                    'Simple PDF Test',
+                    { text: 'This is a test PDF', fontSize: 16 }
+                ]
+            };
+            
+            try {
+                debugLog('Creating simple PDF...');
+                
+                if (isIOS() && isSafari()) {
+                    debugLog('Using iOS Safari method...');
+                    pdfMake.createPdf(docDefinition).getBlob((blob) => {
+                        debugLog(`Blob created: size=${blob.size}`);
+                        const url = URL.createObjectURL(blob);
+                        
+                        if (navigator.share) {
+                            debugLog('Trying Web Share API...');
+                            const file = new File([blob], 'simple-test.pdf', { type: 'application/pdf' });
+                            navigator.share({
+                                files: [file],
+                                title: 'Simple PDF Test'
+                            }).then(() => {
+                                debugLog('Share API success!');
+                            }).catch((error) => {
+                                debugLog(`Share API failed: ${error.message}`);
+                                window.open(url, '_blank');
+                            });
+                        } else {
+                            debugLog('No Share API, opening in new window...');
+                            window.open(url, '_blank');
+                        }
+                    });
+                } else {
+                    debugLog('Using standard download...');
+                    pdfMake.createPdf(docDefinition).download('simple-test.pdf');
+                    debugLog('Standard download initiated');
+                }
+            } catch (error) {
+                debugLog(`ERROR: ${error.message}`);
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        // Test 2: Mobile Optimized PDF
+        function testMobileOptimizedPDF() {
+            debugLog('Testing mobile optimized PDF...');
+            
+            const mobile = isMobile();
+            const fontSize = mobile ? 8 : 12;
+            const margin = mobile ? 20 : 40;
+            
+            debugLog(`Mobile: ${mobile}, Font: ${fontSize}px, Margin: ${margin}mm`);
+            
+            const docDefinition = {
+                pageSize: 'A4',
+                pageMargins: [margin, margin, margin, margin],
+                content: [
+                    {
+                        text: 'JHA TRAVELS',
+                        fontSize: mobile ? 16 : 24,
+                        bold: true,
+                        alignment: 'center',
+                        margin: [0, 0, 0, 10]
+                    },
+                    {
+                        text: 'Mobile Optimized Test',
+                        fontSize: fontSize + 2,
+                        alignment: 'center',
+                        margin: [0, 0, 0, 15]
+                    },
+                    {
+                        table: {
+                            widths: mobile ? ['30%', '45%', '25%'] : ['25%', '50%', '25%'],
+                            body: [
+                                [
+                                    { text: 'Description', bold: true, fillColor: '#1e3a8a', color: 'white', fontSize: fontSize },
+                                    { text: 'Details', bold: true, fillColor: '#1e3a8a', color: 'white', fontSize: fontSize },
+                                    { text: 'Amount', bold: true, fillColor: '#1e3a8a', color: 'white', fontSize: fontSize }
+                                ],
+                                [
+                                    { text: 'Test Item', fontSize: fontSize },
+                                    { text: 'Test Description', fontSize: fontSize },
+                                    { text: 'Rs. 1000/-', fontSize: fontSize }
+                                ],
+                                [
+                                    { text: 'Total', bold: true, fillColor: '#fbbf24', fontSize: fontSize },
+                                    { text: '-', bold: true, fillColor: '#fbbf24', fontSize: fontSize },
+                                    { text: 'Rs. 1000/-', bold: true, fillColor: '#fbbf24', fontSize: fontSize }
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            };
+            
+            try {
+                debugLog('Creating mobile optimized PDF...');
+                
+                if (isIOS() && isSafari()) {
+                    pdfMake.createPdf(docDefinition).getBlob((blob) => {
+                        debugLog(`Mobile PDF blob: size=${blob.size}`);
+                        const url = URL.createObjectURL(blob);
+                        window.open(url, '_blank');
+                    });
+                } else {
+                    pdfMake.createPdf(docDefinition).download('mobile-optimized-test.pdf');
+                }
+                
+                debugLog('Mobile PDF creation completed');
+            } catch (error) {
+                debugLog(`ERROR in mobile PDF: ${error.message}`);
+                alert('Mobile PDF Error: ' + error.message);
+            }
+        }
+        
+        // Test 3: Full Invoice PDF
+        function testInvoicePDF() {
+            debugLog('Testing full invoice PDF...');
+            
+            const mobile = isMobile();
+            const invoiceData = {
+                customer: { name: 'Test Customer', phone: '9876543210', address: 'Test Address' },
+                billType: 'pickup-drop',
+                billData: { pickup: 'Airport', drop: 'Hotel', amount: 500 },
+                extras: [],
+                date: '23/08/2024'
+            };
+            
+            // Use the same logic as the main app
+            const headerFontSize = mobile ? 18 : 24;
+            const tableFontSize = mobile ? 8 : 10;
+            
+            debugLog(`Invoice PDF - Mobile: ${mobile}, Header: ${headerFontSize}px, Table: ${tableFontSize}px`);
+            
+            const docDefinition = {
+                pageSize: 'A4',
+                pageMargins: mobile ? [20, 20, 20, 20] : [40, 40, 40, 40],
+                content: [
+                    {
+                        text: 'JHA TRAVELS - INVOICE',
+                        fontSize: headerFontSize,
+                        bold: true,
+                        alignment: 'center',
+                        margin: [0, 0, 0, 15]
+                    },
+                    {
+                        text: `Customer: ${invoiceData.customer.name}`,
+                        fontSize: mobile ? 10 : 12,
+                        margin: [0, 0, 0, 10]
+                    },
+                    {
+                        table: {
+                            widths: mobile ? ['30%', '45%', '25%'] : ['25%', '50%', '25%'],
+                            body: [
+                                [
+                                    { text: 'Description', bold: true, fillColor: '#1e3a8a', color: 'white', fontSize: tableFontSize },
+                                    { text: 'Address', bold: true, fillColor: '#1e3a8a', color: 'white', fontSize: tableFontSize },
+                                    { text: 'Total', bold: true, fillColor: '#1e3a8a', color: 'white', fontSize: tableFontSize }
+                                ],
+                                [
+                                    { text: 'Pick-up', fontSize: tableFontSize },
+                                    { text: invoiceData.billData.pickup, fontSize: tableFontSize },
+                                    { text: `Rs. ${invoiceData.billData.amount}/-`, rowSpan: 2, alignment: 'center', fontSize: tableFontSize }
+                                ],
+                                [
+                                    { text: 'Drop', fontSize: tableFontSize },
+                                    { text: invoiceData.billData.drop, fontSize: tableFontSize },
+                                    ''
+                                ],
+                                [
+                                    { text: 'Total Amount', bold: true, fillColor: '#fbbf24', fontSize: tableFontSize },
+                                    { text: '-', bold: true, fillColor: '#fbbf24', fontSize: tableFontSize },
+                                    { text: `Rs. ${invoiceData.billData.amount}/-`, bold: true, fillColor: '#fbbf24', fontSize: tableFontSize }
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            };
+            
+            try {
+                debugLog('Creating full invoice PDF...');
+                
+                if (isIOS() && isSafari()) {
+                    pdfMake.createPdf(docDefinition).getBlob((blob) => {
+                        debugLog(`Invoice PDF blob: size=${blob.size}`);
+                        const url = URL.createObjectURL(blob);
+                        
+                        // Try multiple methods for iOS Safari
+                        if (navigator.share) {
+                            const file = new File([blob], 'invoice-test.pdf', { type: 'application/pdf' });
+                            navigator.share({
+                                files: [file],
+                                title: 'JHA Travels Invoice Test'
+                            }).then(() => {
+                                debugLog('Invoice share success!');
+                            }).catch((error) => {
+                                debugLog(`Invoice share failed: ${error.message}`);
+                                // Fallback: open in new window
+                                const newWindow = window.open(url, '_blank');
+                                if (newWindow) {
+                                    setTimeout(() => {
+                                        alert('On iPhone Safari: Tap the Share button and select "Save to Files" to download the PDF.');
+                                    }, 1000);
+                                }
+                            });
+                        } else {
+                            debugLog('No Share API for invoice, opening window...');
+                            const newWindow = window.open(url, '_blank');
+                            if (newWindow) {
+                                setTimeout(() => {
+                                    alert('On iPhone Safari: Tap and hold the PDF, then select "Save to Files" to download.');
+                                }, 1000);
+                            }
+                        }
+                    });
+                } else {
+                    pdfMake.createPdf(docDefinition).download('invoice-test.pdf');
+                    debugLog('Invoice standard download initiated');
+                }
+            } catch (error) {
+                debugLog(`ERROR in invoice PDF: ${error.message}`);
+                alert('Invoice PDF Error: ' + error.message);
+            }
+        }
+        
+        // Initialize
+        window.addEventListener('load', function() {
+            showDeviceInfo();
+            
+            // Check PDFMake loading
+            setTimeout(() => {
+                if (typeof pdfMake !== 'undefined') {
+                    debugLog('✅ PDFMake loaded successfully');
+                } else {
+                    debugLog('❌ PDFMake failed to load');
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
