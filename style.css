@@ -830,11 +830,21 @@ input[type="datetime-local"]:not(:placeholder-shown) {
         box-shadow: none !important;
         margin: 0 !important;
         padding: 0 !important;
-        page-break-inside: avoid;
-        max-height: 250mm;
-        overflow: hidden;
-        transform: scale(0.85);
-        transform-origin: top left;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
+        page-break-before: avoid !important;
+        max-height: 277mm !important;
+        height: 277mm !important;
+        overflow: hidden !important;
+        transform: scale(0.75) !important;
+        transform-origin: top left !important;
+    }
+    
+    /* Reduce all spacing and font sizes for compact printing */
+    * {
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1.2 !important;
     }
     
     /* Invoice Header */
@@ -842,7 +852,7 @@ input[type="datetime-local"]:not(:placeholder-shown) {
         background-color: #1e3a8a !important;
         color: white !important;
         text-align: center !important;
-        padding: 30px 0 !important;
+        padding: 15px 0 !important;
         margin: 0 !important;
         width: 100% !important;
         -webkit-print-color-adjust: exact !important;
@@ -851,24 +861,25 @@ input[type="datetime-local"]:not(:placeholder-shown) {
     
     .invoice-header h1 {
         margin: 0 !important;
-        font-size: 36px !important;
+        font-size: 24px !important;
         font-weight: bold !important;
-        letter-spacing: 2px !important;
+        letter-spacing: 1px !important;
         color: white !important;
     }
     
     .tagline {
-        margin: 10px 0 0 0 !important;
-        font-size: 16px !important;
+        margin: 5px 0 0 0 !important;
+        font-size: 12px !important;
         font-style: italic !important;
         color: white !important;
     }
     
     /* Company Info */
     .company-info-box {
-        border: 2px solid #333 !important;
+        border: 1px solid #333 !important;
         text-align: center !important;
-        margin: 20px !important;
+        margin: 10px !important;
+        padding: 5px !important;
         background-color: #f8f9fa !important;
         -webkit-print-color-adjust: exact !important;
         color-adjust: exact !important;
