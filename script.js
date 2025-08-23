@@ -481,15 +481,15 @@ function generatePDFSafari() {
         
         .invoice-header h1 {
             margin: 0 !important;
-            font-size: 18px !important;
+            font-size: 20px !important;
             font-weight: bold !important;
             color: white !important;
             font-family: 'Times New Roman', Times, serif !important;
         }
         
         .tagline {
-            margin: 1px 0 0 0 !important;
-            font-size: 9px !important;
+            margin: 2px 0 0 0 !important;
+            font-size: 11px !important;
             font-style: italic !important;
             color: white !important;
             font-family: 'Times New Roman', Times, serif !important;
@@ -562,23 +562,30 @@ function generatePDFSafari() {
         .billing-table th,
         .billing-table td {
             border: 1px solid #333 !important;
-            padding: 2px 4px !important;
-            font-size: 9px !important;
-            text-align: left !important;
+            padding: 3px 6px !important;
+            font-size: 10px !important;
+            text-align: center !important;
             background: white !important;
             color: #000 !important;
             font-family: 'Times New Roman', Times, serif !important;
-            line-height: 1.0 !important;
+            line-height: 1.1 !important;
         }
         
         .billing-table th {
-            background-color: #f8f9fa !important;
+            background-color: #1e3a8a !important;
+            color: white !important;
             font-weight: bold !important;
         }
         
         .total-row {
-            background-color: #e9ecef !important;
+            background-color: #fbbf24 !important;
             font-weight: bold !important;
+            color: #000 !important;
+        }
+        
+        .total-row td {
+            background-color: #fbbf24 !important;
+            color: #000 !important;
         }
         
         .signature-section {
@@ -595,10 +602,10 @@ function generatePDFSafari() {
         
         .invoice-footer p {
             margin: 0 !important;
-            font-size: 8px !important;
+            font-size: 10px !important;
             font-weight: bold !important;
             font-family: 'Times New Roman', Times, serif !important;
-            line-height: 1.0 !important;
+            line-height: 1.1 !important;
         }
     `;
     document.head.appendChild(pdfStyle);
@@ -734,15 +741,15 @@ function downloadPDFSafari() {
         
         .invoice-header h1 {
             margin: 0 !important;
-            font-size: 18px !important;
+            font-size: 20px !important;
             font-weight: bold !important;
             color: white !important;
             font-family: 'Times New Roman', Times, serif !important;
         }
         
         .tagline {
-            margin: 1px 0 0 0 !important;
-            font-size: 9px !important;
+            margin: 2px 0 0 0 !important;
+            font-size: 11px !important;
             font-style: italic !important;
             color: white !important;
             font-family: 'Times New Roman', Times, serif !important;
@@ -815,23 +822,30 @@ function downloadPDFSafari() {
         .billing-table th,
         .billing-table td {
             border: 1px solid #333 !important;
-            padding: 2px 4px !important;
-            font-size: 9px !important;
-            text-align: left !important;
+            padding: 3px 6px !important;
+            font-size: 10px !important;
+            text-align: center !important;
             background: white !important;
             color: #000 !important;
             font-family: 'Times New Roman', Times, serif !important;
-            line-height: 1.0 !important;
+            line-height: 1.1 !important;
         }
         
         .billing-table th {
-            background-color: #f8f9fa !important;
+            background-color: #1e3a8a !important;
+            color: white !important;
             font-weight: bold !important;
         }
         
         .total-row {
-            background-color: #e9ecef !important;
+            background-color: #fbbf24 !important;
             font-weight: bold !important;
+            color: #000 !important;
+        }
+        
+        .total-row td {
+            background-color: #fbbf24 !important;
+            color: #000 !important;
         }
         
         .signature-section {
@@ -848,10 +862,10 @@ function downloadPDFSafari() {
         
         .invoice-footer p {
             margin: 0 !important;
-            font-size: 8px !important;
+            font-size: 10px !important;
             font-weight: bold !important;
             font-family: 'Times New Roman', Times, serif !important;
-            line-height: 1.0 !important;
+            line-height: 1.1 !important;
         }
     `;
     document.head.appendChild(pdfStyle);
