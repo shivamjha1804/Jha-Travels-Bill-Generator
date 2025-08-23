@@ -797,26 +797,21 @@ function downloadPDF() {
 }
 
 function sendWhatsApp() {
-    // First generate and download the PDF
-    downloadPDF();
+    const phoneNumber = currentInvoiceData.customer.phone.replace(/\D/g, ''); // Remove non-digits
+    const customerName = currentInvoiceData.customer.name;
+    const date = currentInvoiceData.date;
+    const totalAmount = calculateTotalAmount();
     
-    // Small delay to ensure PDF generation starts
-    setTimeout(() => {
-        const phoneNumber = currentInvoiceData.customer.phone.replace(/\D/g, ''); // Remove non-digits
-        const customerName = currentInvoiceData.customer.name;
-        const date = currentInvoiceData.date;
-        const totalAmount = calculateTotalAmount();
-        
-        let serviceType = '';
-        if (currentInvoiceData.billType === 'pickup-drop') {
-            serviceType = `Pickup-Drop Service from ${currentInvoiceData.billData.pickup} to ${currentInvoiceData.billData.drop}`;
-        } else if (currentInvoiceData.billType === 'duration') {
-            serviceType = `${currentInvoiceData.billData.hours} Hours Service`;
-        } else if (currentInvoiceData.billType === 'distance') {
-            serviceType = `${currentInvoiceData.billData.distance} KM Service`;
-        }
-        
-        const message = `Hi ${customerName}!
+    let serviceType = '';
+    if (currentInvoiceData.billType === 'pickup-drop') {
+        serviceType = `Pickup-Drop Service from ${currentInvoiceData.billData.pickup} to ${currentInvoiceData.billData.drop}`;
+    } else if (currentInvoiceData.billType === 'duration') {
+        serviceType = `${currentInvoiceData.billData.hours} Hours Service`;
+    } else if (currentInvoiceData.billType === 'distance') {
+        serviceType = `${currentInvoiceData.billData.distance} KM Service`;
+    }
+    
+    const message = `Hi ${customerName}!
 
 🚗 *JHA TRAVELS* - Invoice
 
@@ -828,18 +823,12 @@ Thank you for choosing JHA Travels!
 "We Know Journey, Makes Memories"
 
 📞 Contact: 9051066842 | 9830466842
-📍 Address: Hatiara Bypass Road, Jheel Bagan, Sardarpara, Kolkata - 700157
+📍 Address: Hatiara Bypass Road, Jheel Bagan, Sardarpara, Kolkata - 700157`;
 
-📄 *Invoice PDF has been downloaded - please attach it to this chat*`;
-
-        const encodedMessage = encodeURIComponent(message);
-        const whatsappURL = `https://wa.me/91${phoneNumber}?text=${encodedMessage}`;
-        
-        window.open(whatsappURL, '_blank');
-        
-        // Show helpful message to user
-        alert('📱 WhatsApp opened with message!\n📄 PDF downloaded - please attach it to the chat manually.');
-    }, 1000);
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappURL = `https://wa.me/91${phoneNumber}?text=${encodedMessage}`;
+    
+    window.open(whatsappURL, '_blank');
 }
 
 function calculateTotalAmount() {
