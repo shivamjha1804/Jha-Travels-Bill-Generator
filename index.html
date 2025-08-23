@@ -97,11 +97,11 @@
             <div id="pdfActions" class="pdf-actions" style="display: none;">
                 <div class="success-message">📄 PDF Created Successfully!</div>
                 <div class="print-tip">
-                    <strong>💡 IMPORTANT - For Clean PDF:</strong><br>
-                    <strong>📱 iPhone/iPad:</strong> Tap "Options" → Turn OFF "Headers & Footers"<br>
-                    <strong>💻 Mac:</strong> Click "Show Details" → Turn OFF "Headers and Footers"<br>
-                    <strong>🖥️ Windows:</strong> Click "More settings" → Turn OFF "Headers and footers"<br>
-                    <strong>🎨 All devices:</strong> Enable "Background Graphics/Colors" for styling
+                    <strong>💡 PRINT TO PDF INSTRUCTIONS:</strong><br>
+                    <strong>🖨️ All Browsers:</strong> Choose "Save as PDF" as destination<br>
+                    <strong>📱 Mobile:</strong> Works perfectly on all mobile browsers<br>
+                    <strong>💻 Desktop:</strong> Turn OFF headers/footers for clean PDF<br>
+                    <strong>🎨 Colors:</strong> Enable "Background graphics" for styling
                 </div>
                 <div class="action-buttons">
                     <button onclick="downloadPDF()" class="download-btn">⬇️ Download PDF</button>
@@ -114,40 +114,12 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <!-- Using built-in browser PDF generation - no external packages needed -->
     <script>
         // Wait for DOM and scripts to load
         window.addEventListener('load', function() {
             setTimeout(function() {
-                console.log('Checking pdfMake availability...');
-                console.log('typeof pdfMake:', typeof pdfMake);
-                console.log('window.pdfMake:', window.pdfMake);
-                
-                if (typeof pdfMake !== 'undefined') {
-                    console.log('✅ PDFMake is available');
-                    // Test creating a simple PDF
-                    try {
-                        const testDoc = { content: ['Hello World'] };
-                        const pdfDoc = pdfMake.createPdf(testDoc);
-                        console.log('✅ PDFMake test PDF created successfully');
-                    } catch (e) {
-                        console.error('❌ PDFMake test failed:', e);
-                    }
-                } else {
-                    console.error('❌ PDFMake is not available');
-                    // Try loading fallback
-                    console.log('Loading pdfMake fallback...');
-                    const script1 = document.createElement('script');
-                    script1.src = 'https://unpkg.com/pdfmake@0.2.20/build/pdfmake.min.js';
-                    document.head.appendChild(script1);
-                    
-                    script1.onload = function() {
-                        const script2 = document.createElement('script');
-                        script2.src = 'https://unpkg.com/pdfmake@0.2.20/build/vfs_fonts.js';
-                        document.head.appendChild(script2);
-                    };
-                }
+                console.log('✅ Using built-in browser PDF generation - no external dependencies');
             }, 1000);
         });
     </script>

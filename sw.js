@@ -5,8 +5,7 @@ const urlsToCache = [
   './style.css',
   './script.js',
   './manifest.json',
-  'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js'
+  // No external PDF libraries needed - using built-in browser PDF generation
 ];
 
 // Install service worker
