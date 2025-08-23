@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JHA Travels - Invoice Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <h1>JHA TRAVELS</h1>
+            <p>Invoice Generator</p>
+        </header>
+
+        <!-- Invoice Form -->
+        <div id="invoiceForm" class="form-section">
+            <h2>📋 Create New Invoice</h2>
+            <div class="instruction-box">
+                <p><strong>📝 Follow these simple steps:</strong></p>
+                <p>1. Fill customer information<br>
+                2. Choose bill type<br>
+                3. Enter bill details<br>
+                4. Add extras (if needed)<br>
+                5. Click Preview to see invoice</p>
+            </div>
+            
+            <!-- Customer Details -->
+            <div class="form-group">
+                <h3>👤 Step 1: Customer Details</h3>
+                <div class="form-row">
+                    <input type="text" id="customerName" placeholder="Enter Customer Name" required>
+                    <input type="text" id="customerPhone" placeholder="Enter Phone Number" required>
+                </div>
+                <div class="form-row">
+                    <input type="text" id="customerAddress" placeholder="Enter Customer Address" required>
+                    <input type="date" id="invoiceDate" required>
+                </div>
+            </div>
+
+            <!-- Bill Type Selection -->
+            <div class="form-group">
+                <h3>🚗 Step 2: Choose Bill Type</h3>
+                <div class="help-text">Click one button below to choose the type of service:</div>
+                <div class="bill-type-selector">
+                    <button type="button" class="bill-type-btn active" onclick="selectBillType('pickup-drop')">
+                        🏨 Pickup - Drop<br>
+                        <small>One location to another</small>
+                    </button>
+                    <button type="button" class="bill-type-btn" onclick="selectBillType('duration')">
+                        ⏰ Time Based<br>
+                        <small>Charge by hours</small>
+                    </button>
+                    <button type="button" class="bill-type-btn" onclick="selectBillType('distance')">
+                        📏 Distance Based<br>
+                        <small>Charge by kilometers</small>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bill Details -->
+            <div class="form-group">
+                <h3>💰 Step 3: Enter Bill Details</h3>
+                <div id="billDetails">
+                    <!-- Dynamic content based on bill type -->
+                </div>
+            </div>
+
+            <!-- Extras -->
+            <div class="form-group">
+                <h3>➕ Step 4: Add Extra Charges (Optional)</h3>
+                <div class="help-text">Add parking, tolls, or other extra charges here. Skip if none.</div>
+                <div id="extrasContainer">
+                    <!-- Dynamic extras will be added here -->
+                </div>
+                <button type="button" class="add-btn" onclick="addExtra()">➕ Add Extra Charge</button>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="form-actions">
+                <h3>🔍 Step 5: Create Your Invoice</h3>
+                <button type="button" class="preview-btn" onclick="previewInvoice()">👀 Preview Invoice</button>
+                <button type="button" class="clear-btn" onclick="clearForm()">🗑️ Start Over</button>
+            </div>
+        </div>
+
+        <!-- Preview Section -->
+        <div id="previewSection" class="preview-section" style="display: none;">
+            <div class="preview-actions">
+                <div class="success-message">✅ Invoice is ready! Choose what to do:</div>
+                <button onclick="editInvoice()" class="edit-btn">✏️ Make Changes</button>
+                <button onclick="generatePDF()" class="pdf-btn">📄 Create PDF</button>
+            </div>
+            
+            <div id="pdfActions" class="pdf-actions" style="display: none;">
+                <div class="success-message">📄 PDF Created Successfully!</div>
+                <div class="print-tip">
+                    <strong>💡 Important:</strong> In the print dialog:<br>
+                    • Enable "Background Graphics" or "Background Colors" for colorful PDF<br>
+                    • Set Headers & Footers to "None" for clean PDF without page numbers
+                </div>
+                <div class="action-buttons">
+                    <button onclick="downloadPDF()" class="download-btn">⬇️ Download PDF</button>
+                    <button onclick="sendWhatsApp()" class="whatsapp-btn">📱 Send via WhatsApp</button>
+                </div>
+            </div>
+            <div id="invoicePreview" class="invoice-preview">
+                <!-- Preview content will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
