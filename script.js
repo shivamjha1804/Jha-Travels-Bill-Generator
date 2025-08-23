@@ -464,7 +464,7 @@ function generatePDFSafari() {
     pdfStyle.innerHTML = `
         #invoicePreview {
             background: white !important;
-            font-family: 'Arial', 'Helvetica', sans-serif !important;
+            font-family: 'Times New Roman', Times, serif !important;
             color: #000 !important;
             width: 210mm !important;
             min-height: 297mm !important;
@@ -639,7 +639,7 @@ function downloadPDFSafari() {
     pdfStyle.innerHTML = `
         #invoicePreview {
             background: white !important;
-            font-family: 'Arial', 'Helvetica', sans-serif !important;
+            font-family: 'Times New Roman', Times, serif !important;
             color: #000 !important;
             width: 210mm !important;
             min-height: 297mm !important;
