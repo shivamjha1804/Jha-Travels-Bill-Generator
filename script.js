@@ -438,528 +438,267 @@ function generateInvoiceHTML(data) {
     `;
 }
 
-// Device detection function
-function isSafari() {
-    return /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor);
-}
-
-function isMobile() {
-    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-}
-
-// Safari/Mobile PDF generation using html2pdf.js
-function generatePDFSafari() {
-    const customerName = currentInvoiceData.customer.name.replace(/\s+/g, '_');
-    const date = currentInvoiceData.date.replace(/\//g, '_');
+// Universal PDF generation using PDFMake - works perfectly on all browsers
+function generatePDF() {
+    if (!currentInvoiceData) {
+        alert('No invoice data available');
+        return;
+    }
     
-    const element = document.getElementById('invoicePreview');
-    
-    // Add ultra-compact PDF-optimized CSS for mobile
-    const pdfStyle = document.createElement('style');
-    pdfStyle.id = 'pdf-optimize-style';
-    pdfStyle.innerHTML = `
-        #invoicePreview {
-            background: white !important;
-            font-family: 'Times New Roman', Times, serif !important;
-            color: #000 !important;
-            width: 210mm !important;
-            min-height: 297mm !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            box-sizing: border-box !important;
-        }
-        
-        .invoice-header {
-            background-color: #1e3a8a !important;
-            color: white !important;
-            text-align: center !important;
-            padding: 8px 0 !important;
-            margin: 0 0 3px 0 !important;
-            width: 100% !important;
-            box-sizing: border-box !important;
-        }
-        
-        .invoice-header h1 {
-            margin: 0 !important;
-            font-size: 20px !important;
-            font-weight: bold !important;
-            color: white !important;
-            font-family: 'Times New Roman', Times, serif !important;
-        }
-        
-        .tagline {
-            margin: 2px 0 0 0 !important;
-            font-size: 11px !important;
-            font-style: italic !important;
-            color: white !important;
-            font-family: 'Times New Roman', Times, serif !important;
-        }
-        
-        .company-info-box {
-            border: 1px solid #333 !important;
-            background-color: #f8f9fa !important;
-            padding: 3px !important;
-            margin: 0 0 3px 0 !important;
-            text-align: center !important;
-            box-sizing: border-box !important;
-        }
-        
-        .company-info-box h3 {
-            margin: 0 !important;
-            font-size: 10px !important;
-            font-family: 'Times New Roman', Times, serif !important;
-        }
-        
-        .company-details {
-            margin: 0 0 3px 0 !important;
-            text-align: center !important;
-        }
-        
-        .company-details p {
-            margin: 0 !important;
-            font-size: 9px !important;
-            font-family: 'Times New Roman', Times, serif !important;
-            line-height: 1.0 !important;
-        }
-        
-        .customer-header {
-            display: flex !important;
-            justify-content: space-between !important;
-            margin: 0 0 2px 0 !important;
-            font-weight: bold !important;
-            font-family: 'Times New Roman', Times, serif !important;
-            font-size: 10px !important;
-        }
-        
-        .customer-info {
-            margin: 0 0 3px 0 !important;
-        }
-        
-        .customer-info p {
-            margin: 0 !important;
-            font-size: 9px !important;
-            font-family: 'Times New Roman', Times, serif !important;
-            line-height: 1.0 !important;
-        }
-        
-        .billing-section {
-            margin: 0 0 3px 0 !important;
-        }
-        
-        .billing-section h3 {
-            font-family: 'Times New Roman', Times, serif !important;
-            font-size: 10px !important;
-            margin: 0 0 2px 0 !important;
-        }
-        
-        .billing-table {
-            width: 100% !important;
-            border-collapse: collapse !important;
-            font-family: 'Times New Roman', Times, serif !important;
-            margin: 2px 0 !important;
-        }
-        
-        .billing-table th,
-        .billing-table td {
-            border: 1px solid #333 !important;
-            padding: 3px 6px !important;
-            font-size: 10px !important;
-            text-align: center !important;
-            background: white !important;
-            color: #000 !important;
-            font-family: 'Times New Roman', Times, serif !important;
-            line-height: 1.1 !important;
-        }
-        
-        .billing-table th {
-            background-color: #1e3a8a !important;
-            color: white !important;
-            font-weight: bold !important;
-        }
-        
-        .total-row {
-            background-color: #fbbf24 !important;
-            font-weight: bold !important;
-            color: #000 !important;
-        }
-        
-        .total-row td {
-            background-color: #fbbf24 !important;
-            color: #000 !important;
-        }
-        
-        .signature-section {
-            margin: 2px 0 !important;
-            text-align: right !important;
-            font-family: 'Times New Roman', Times, serif !important;
-            font-size: 9px !important;
-        }
-        
-        .invoice-footer {
-            margin: 1px 0 !important;
-            text-align: center !important;
-        }
-        
-        .invoice-footer p {
-            margin: 0 !important;
-            font-size: 10px !important;
-            font-weight: bold !important;
-            font-family: 'Times New Roman', Times, serif !important;
-            line-height: 1.1 !important;
-        }
-    `;
-    document.head.appendChild(pdfStyle);
-    
-    const options = {
-        margin: [15, 15, 15, 15],
-        filename: `JHA_TRAVELS_${customerName}_${date}.pdf`,
-        image: { 
-            type: 'jpeg', 
-            quality: 1
-        },
-        html2canvas: { 
-            scale: 3,
-            useCORS: true,
-            letterRendering: true,
-            allowTaint: false,
-            backgroundColor: '#ffffff',
-            width: 794,
-            height: 1123,
-            dpi: 300
-        },
-        jsPDF: { 
-            unit: 'mm', 
-            format: 'a4', 
-            orientation: 'portrait',
-            putOnlyUsedFonts: true,
-            floatPrecision: 16
-        }
-    };
+    const docDefinition = createPDFDocDefinition(currentInvoiceData);
     
     // Show PDF actions
     const pdfActions = document.getElementById('pdfActions');
     pdfActions.style.display = 'block';
     
-    html2pdf().set(options).from(element).save().then(() => {
-        // Remove the temporary style after PDF generation
-        const styleEl = document.getElementById('pdf-optimize-style');
-        if (styleEl) styleEl.remove();
+    // Create and show PDF preview
+    pdfMake.createPdf(docDefinition).getBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
     });
 }
 
-// Chrome/Desktop PDF generation using window.print()
-function generatePDFChrome() {
-    const previewActions = document.querySelector('.preview-actions');
-    const pdfActions = document.getElementById('pdfActions');
-    
-    // Add print-friendly styles
-    const printStyle = document.createElement('style');
-    printStyle.id = 'print-style';
-    printStyle.innerHTML = `
-        @media print {
-            @page { 
-                size: A4; 
-                margin: 0;
-                @top-left { content: "" !important; display: none !important; }
-                @top-center { content: "" !important; display: none !important; }
-                @top-right { content: "" !important; display: none !important; }
-                @bottom-left { content: "" !important; display: none !important; }
-                @bottom-center { content: "" !important; display: none !important; }
-                @bottom-right { content: "" !important; display: none !important; }
-            }
-            * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; page-break-inside: avoid !important; page-break-after: avoid !important; page-break-before: avoid !important; }
-            html { margin: 0 !important; padding: 0 !important; }
-            body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 14px !important; }
-            .preview-actions, .pdf-actions { display: none !important; }
-            .invoice-preview { page-break-inside: avoid !important; page-break-after: avoid !important; width: calc(100% - 20mm) !important; height: auto !important; max-height: 277mm !important; overflow: hidden !important; margin: 10mm !important; transform: none !important; }
-        }
-    `;
-    document.head.appendChild(printStyle);
-    
-    previewActions.style.display = 'none';
-    
-    const customerName = currentInvoiceData.customer.name.replace(/\s+/g, '_');
-    const date = currentInvoiceData.date.replace(/\//g, '_');
-    
-    const originalTitle = document.title;
-    document.title = `JHA_TRAVELS_${customerName}_${date}`;
-    
-    // Show PDF actions after print dialog
-    setTimeout(() => {
-        pdfActions.style.display = 'block';
-        document.title = originalTitle;
-        // Remove print style
-        const printStyleEl = document.getElementById('print-style');
-        if (printStyleEl) printStyleEl.remove();
-    }, 2000);
-    
-    window.print();
-}
-
-// Main PDF generation function - chooses approach based on browser
-function generatePDF() {
-    if (isSafari() || isMobile()) {
-        // Use html2pdf.js for Safari and mobile devices
-        generatePDFSafari();
-    } else {
-        // Use window.print() for Chrome/Desktop
-        generatePDFChrome();
+// Universal PDF download using PDFMake - works perfectly on all browsers
+function downloadPDF() {
+    if (!currentInvoiceData) {
+        alert('No invoice data available');
+        return;
     }
-}
-
-// Safari/Mobile download PDF using html2pdf.js
-function downloadPDFSafari() {
+    
+    const docDefinition = createPDFDocDefinition(currentInvoiceData);
     const customerName = currentInvoiceData.customer.name.replace(/\s+/g, '_');
     const date = currentInvoiceData.date.replace(/\//g, '_');
     
-    const element = document.getElementById('invoicePreview');
+    // Download PDF with filename
+    pdfMake.createPdf(docDefinition).download(`JHA_TRAVELS_${customerName}_${date}.pdf`);
+}
+
+// Create PDFMake document definition for invoice
+function createPDFDocDefinition(data) {
+    const { customer, billType, billData, extras, date } = data;
     
-    // Add PDF-optimized CSS temporarily
-    const pdfStyle = document.createElement('style');
-    pdfStyle.id = 'pdf-download-optimize-style';
-    pdfStyle.innerHTML = `
-        #invoicePreview {
-            background: white !important;
-            font-family: 'Times New Roman', Times, serif !important;
-            color: #000 !important;
-            width: 210mm !important;
-            min-height: 297mm !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            box-sizing: border-box !important;
-        }
-        
-        .invoice-header {
-            background-color: #1e3a8a !important;
-            color: white !important;
-            text-align: center !important;
-            padding: 8px 0 !important;
-            margin: 0 0 3px 0 !important;
-            width: 100% !important;
-            box-sizing: border-box !important;
-        }
-        
-        .invoice-header h1 {
-            margin: 0 !important;
-            font-size: 20px !important;
-            font-weight: bold !important;
-            color: white !important;
-            font-family: 'Times New Roman', Times, serif !important;
-        }
-        
-        .tagline {
-            margin: 2px 0 0 0 !important;
-            font-size: 11px !important;
-            font-style: italic !important;
-            color: white !important;
-            font-family: 'Times New Roman', Times, serif !important;
-        }
-        
-        .company-info-box {
-            border: 1px solid #333 !important;
-            background-color: #f8f9fa !important;
-            padding: 3px !important;
-            margin: 0 0 3px 0 !important;
-            text-align: center !important;
-            box-sizing: border-box !important;
-        }
-        
-        .company-info-box h3 {
-            margin: 0 !important;
-            font-size: 10px !important;
-            font-family: 'Times New Roman', Times, serif !important;
-        }
-        
-        .company-details {
-            margin: 0 0 3px 0 !important;
-            text-align: center !important;
-        }
-        
-        .company-details p {
-            margin: 0 !important;
-            font-size: 9px !important;
-            font-family: 'Times New Roman', Times, serif !important;
-            line-height: 1.0 !important;
-        }
-        
-        .customer-header {
-            display: flex !important;
-            justify-content: space-between !important;
-            margin: 0 0 2px 0 !important;
-            font-weight: bold !important;
-            font-family: 'Times New Roman', Times, serif !important;
-            font-size: 10px !important;
-        }
-        
-        .customer-info {
-            margin: 0 0 3px 0 !important;
-        }
-        
-        .customer-info p {
-            margin: 0 !important;
-            font-size: 9px !important;
-            font-family: 'Times New Roman', Times, serif !important;
-            line-height: 1.0 !important;
-        }
-        
-        .billing-section {
-            margin: 0 0 3px 0 !important;
-        }
-        
-        .billing-section h3 {
-            font-family: 'Times New Roman', Times, serif !important;
-            font-size: 10px !important;
-            margin: 0 0 2px 0 !important;
-        }
-        
-        .billing-table {
-            width: 100% !important;
-            border-collapse: collapse !important;
-            font-family: 'Times New Roman', Times, serif !important;
-            margin: 2px 0 !important;
-        }
-        
-        .billing-table th,
-        .billing-table td {
-            border: 1px solid #333 !important;
-            padding: 3px 6px !important;
-            font-size: 10px !important;
-            text-align: center !important;
-            background: white !important;
-            color: #000 !important;
-            font-family: 'Times New Roman', Times, serif !important;
-            line-height: 1.1 !important;
-        }
-        
-        .billing-table th {
-            background-color: #1e3a8a !important;
-            color: white !important;
-            font-weight: bold !important;
-        }
-        
-        .total-row {
-            background-color: #fbbf24 !important;
-            font-weight: bold !important;
-            color: #000 !important;
-        }
-        
-        .total-row td {
-            background-color: #fbbf24 !important;
-            color: #000 !important;
-        }
-        
-        .signature-section {
-            margin: 2px 0 !important;
-            text-align: right !important;
-            font-family: 'Times New Roman', Times, serif !important;
-            font-size: 9px !important;
-        }
-        
-        .invoice-footer {
-            margin: 1px 0 !important;
-            text-align: center !important;
-        }
-        
-        .invoice-footer p {
-            margin: 0 !important;
-            font-size: 10px !important;
-            font-weight: bold !important;
-            font-family: 'Times New Roman', Times, serif !important;
-            line-height: 1.1 !important;
-        }
-    `;
-    document.head.appendChild(pdfStyle);
+    let totalAmount = 0;
+    let tableBody = [
+        [
+            { text: 'Description', style: 'tableHeader' },
+            { text: billType === 'pickup-drop' ? 'Address' : 'Value', style: 'tableHeader' },
+            { text: 'Total', style: 'tableHeader' }
+        ]
+    ];
     
-    const options = {
-        margin: [15, 15, 15, 15],
-        filename: `JHA_TRAVELS_${customerName}_${date}.pdf`,
-        image: { 
-            type: 'jpeg', 
-            quality: 1
+    // Build table rows based on bill type
+    if (billType === 'pickup-drop') {
+        totalAmount = parseFloat(billData.amount) || 0;
+        tableBody.push(
+            ['Pick-up', billData.pickup, { text: `Rs. ${totalAmount.toLocaleString()}/-`, rowSpan: 2, alignment: 'center' }],
+            ['Drop', billData.drop, '']
+        );
+    } else if (billType === 'duration') {
+        totalAmount = billData.hours * billData.hourlyRate;
+        let timeDetails = `${billData.hours} Hours`;
+        if (billData.distance) timeDetails += ` (${billData.distance} km)`;
+        if (billData.startDateTime && billData.endDateTime) {
+            const startTime = new Date(billData.startDateTime).toLocaleString('en-GB');
+            const endTime = new Date(billData.endDateTime).toLocaleString('en-GB');
+            timeDetails += `\nFrom: ${startTime}\nTo: ${endTime}`;
+        }
+        
+        tableBody.push(
+            ['Time', timeDetails, `${billData.hours} Hours`],
+            ['Per Hour Rate', `Rs. ${billData.hourlyRate.toLocaleString()}/-`, `Rs ${billData.hourlyRate.toLocaleString()}/-`]
+        );
+    } else if (billType === 'distance') {
+        totalAmount = billData.distance * billData.perKmRate;
+        let distanceDetails = `${billData.distance} km`;
+        
+        if (billData.startAddress && billData.endAddress) {
+            distanceDetails += `\nFrom: ${billData.startAddress}\nTo: ${billData.endAddress}`;
+        }
+        
+        if (billData.startKm && billData.endKm) {
+            distanceDetails += `\nStart: ${billData.startKm.toLocaleString()} km\nEnd: ${billData.endKm.toLocaleString()} km`;
+        }
+        
+        tableBody.push(
+            ['Distance', distanceDetails, `${billData.distance} km`],
+            ['Per Km Rate', `Rs. ${billData.perKmRate.toLocaleString()}/-`, `Rs ${billData.perKmRate.toLocaleString()}/-`]
+        );
+    }
+    
+    // Add extras
+    extras.forEach(extra => {
+        tableBody.push([
+            `Extra (${extra.reason})`,
+            extra.description || '-',
+            `Rs. ${extra.amount.toLocaleString()}/-`
+        ]);
+        totalAmount += extra.amount;
+    });
+    
+    // Add total row
+    tableBody.push([
+        { text: 'Total Amount', style: 'totalCell' },
+        { text: '-', style: 'totalCell' },
+        { text: `Rs. ${totalAmount.toLocaleString()}/-`, style: 'totalCell' }
+    ]);
+    
+    return {
+        pageSize: 'A4',
+        pageMargins: [40, 60, 40, 60],
+        content: [
+            // Header
+            {
+                table: {
+                    widths: ['*'],
+                    body: [
+                        [{
+                            text: 'JHA TRAVELS',
+                            style: 'header',
+                            fillColor: '#1e3a8a',
+                            color: 'white'
+                        }],
+                        [{
+                            text: '"We Know Journey, Makes Memories"',
+                            style: 'tagline',
+                            fillColor: '#1e3a8a',
+                            color: 'white'
+                        }]
+                    ]
+                },
+                layout: 'noBorders'
+            },
+            
+            // Company info box
+            {
+                table: {
+                    widths: ['*'],
+                    body: [
+                        [{ text: 'Company Information', style: 'companyHeader', fillColor: '#f8f9fa' }]
+                    ]
+                },
+                margin: [0, 10, 0, 0]
+            },
+            
+            // Company details
+            {
+                text: [
+                    'Address: Hatiara Bypass Road, Jheel Bagan, Sardarpara, Kolkata - 700157\n',
+                    'Phone: 9051066842 | 9830466842'
+                ],
+                style: 'companyDetails',
+                alignment: 'center',
+                margin: [0, 5, 0, 15]
+            },
+            
+            // Customer header with date
+            {
+                columns: [
+                    { text: 'Customer Details', style: 'sectionHeader' },
+                    { text: `Date: ${date}`, style: 'sectionHeader', alignment: 'right' }
+                ],
+                margin: [0, 0, 0, 10]
+            },
+            
+            // Customer info
+            {
+                text: [
+                    `Name: ${customer.name}\n`,
+                    `Phone: ${customer.phone}\n`,
+                    `Address: ${customer.address}`
+                ],
+                style: 'customerInfo',
+                margin: [0, 0, 0, 15]
+            },
+            
+            // Billing section
+            { text: 'Billing Details', style: 'sectionHeader', margin: [0, 0, 0, 10] },
+            
+            // Billing table
+            {
+                table: {
+                    headerRows: 1,
+                    widths: ['25%', '50%', '25%'],
+                    body: tableBody
+                },
+                layout: {
+                    fillColor: function (rowIndex, node, columnIndex) {
+                        if (rowIndex === 0) return '#1e3a8a'; // Header
+                        if (rowIndex === tableBody.length - 1) return '#fbbf24'; // Total row
+                        return null;
+                    }
+                },
+                margin: [0, 0, 0, 20]
+            },
+            
+            // Signature
+            {
+                text: 'Signature: ..................................................',
+                alignment: 'right',
+                margin: [0, 20, 0, 20]
+            },
+            
+            // Footer
+            {
+                text: 'Thank you for choosing JHA TRAVELS! We look forward to serving you again.',
+                style: 'footer',
+                alignment: 'center'
+            }
+        ],
+        styles: {
+            header: {
+                fontSize: 24,
+                bold: true,
+                alignment: 'center',
+                margin: [0, 10, 0, 5]
+            },
+            tagline: {
+                fontSize: 12,
+                italics: true,
+                alignment: 'center',
+                margin: [0, 0, 0, 10]
+            },
+            companyHeader: {
+                fontSize: 12,
+                bold: true,
+                alignment: 'center',
+                margin: [0, 8, 0, 8]
+            },
+            companyDetails: {
+                fontSize: 10,
+                lineHeight: 1.2
+            },
+            sectionHeader: {
+                fontSize: 14,
+                bold: true,
+                color: '#000'
+            },
+            customerInfo: {
+                fontSize: 11,
+                lineHeight: 1.3
+            },
+            tableHeader: {
+                bold: true,
+                fontSize: 12,
+                color: 'white',
+                alignment: 'center'
+            },
+            totalCell: {
+                bold: true,
+                fontSize: 11,
+                alignment: 'center',
+                color: '#000'
+            },
+            footer: {
+                fontSize: 11,
+                bold: true,
+                color: '#000'
+            }
         },
-        html2canvas: { 
-            scale: 3,
-            useCORS: true,
-            letterRendering: true,
-            allowTaint: false,
-            backgroundColor: '#ffffff',
-            width: 794,
-            height: 1123,
-            dpi: 300
-        },
-        jsPDF: { 
-            unit: 'mm', 
-            format: 'a4', 
-            orientation: 'portrait',
-            putOnlyUsedFonts: true,
-            floatPrecision: 16
+        defaultStyle: {
+            font: 'Times',
+            fontSize: 10
         }
     };
-    
-    html2pdf().set(options).from(element).save().then(() => {
-        // Remove the temporary style after PDF generation
-        const styleEl = document.getElementById('pdf-download-optimize-style');
-        if (styleEl) styleEl.remove();
-    });
-}
-
-// Chrome/Desktop download PDF using window.print()
-function downloadPDFChrome() {
-    const customerName = currentInvoiceData.customer.name.replace(/\s+/g, '_');
-    const date = currentInvoiceData.date.replace(/\//g, '_');
-    
-    // Add print-friendly styles
-    const printStyle = document.createElement('style');
-    printStyle.id = 'download-print-style';
-    printStyle.innerHTML = `
-        @media print {
-            @page { 
-                size: A4; 
-                margin: 0;
-                @top-left { content: "" !important; display: none !important; }
-                @top-center { content: "" !important; display: none !important; }
-                @top-right { content: "" !important; display: none !important; }
-                @bottom-left { content: "" !important; display: none !important; }
-                @bottom-center { content: "" !important; display: none !important; }
-                @bottom-right { content: "" !important; display: none !important; }
-            }
-            * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; page-break-inside: avoid !important; page-break-after: avoid !important; page-break-before: avoid !important; }
-            html { margin: 0 !important; padding: 0 !important; }
-            body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 14px !important; }
-            .preview-actions, .pdf-actions { display: none !important; }
-            .invoice-preview { page-break-inside: avoid !important; page-break-after: avoid !important; width: calc(100% - 20mm) !important; height: auto !important; max-height: 277mm !important; overflow: hidden !important; margin: 10mm !important; transform: none !important; }
-        }
-    `;
-    document.head.appendChild(printStyle);
-    
-    const originalTitle = document.title;
-    document.title = `JHA_TRAVELS_${customerName}_${date}`;
-    
-    // Hide actions for clean PDF
-    const pdfActions = document.getElementById('pdfActions');
-    pdfActions.style.display = 'none';
-    
-    window.print();
-    
-    // Restore after print
-    setTimeout(() => {
-        pdfActions.style.display = 'block';
-        document.title = originalTitle;
-        // Remove print style
-        const printStyleEl = document.getElementById('download-print-style');
-        if (printStyleEl) printStyleEl.remove();
-    }, 2000);
-}
-
-// Main download PDF function - chooses approach based on browser
-function downloadPDF() {
-    if (isSafari() || isMobile()) {
-        // Use html2pdf.js for Safari and mobile devices
-        downloadPDFSafari();
-    } else {
-        // Use window.print() for Chrome/Desktop
-        downloadPDFChrome();
-    }
 }
 
 function sendWhatsApp() {
