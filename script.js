@@ -451,10 +451,10 @@ function generatePDF() {
     printStyle.id = 'print-style';
     printStyle.innerHTML = `
         @media print {
-            * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }
+            * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; page-break-inside: avoid !important; page-break-after: avoid !important; page-break-before: avoid !important; }
             body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 14px !important; }
             .preview-actions, .pdf-actions { display: none !important; }
-            .invoice-preview { page-break-inside: avoid !important; width: 100% !important; height: auto !important; }
+            .invoice-preview { page-break-inside: avoid !important; page-break-after: avoid !important; width: 100% !important; height: auto !important; max-height: 277mm !important; overflow: hidden !important; }
             @page { size: A4; margin: 15mm 10mm; }
         }
     `;
@@ -489,10 +489,10 @@ function downloadPDF() {
     printStyle.id = 'download-print-style';
     printStyle.innerHTML = `
         @media print {
-            * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }
+            * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; page-break-inside: avoid !important; page-break-after: avoid !important; page-break-before: avoid !important; }
             body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 14px !important; }
             .preview-actions, .pdf-actions { display: none !important; }
-            .invoice-preview { page-break-inside: avoid !important; width: 100% !important; height: auto !important; }
+            .invoice-preview { page-break-inside: avoid !important; page-break-after: avoid !important; width: 100% !important; height: auto !important; max-height: 277mm !important; overflow: hidden !important; }
             @page { size: A4; margin: 15mm 10mm; }
         }
     `;
