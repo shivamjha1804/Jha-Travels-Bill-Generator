@@ -453,26 +453,7 @@ function generatePDF() {
         @media print {
             @page { 
                 size: A4; 
-                margin: 0;
-                @top-left-corner { content: ""; }
-                @top-left { content: ""; }
-                @top-center { content: ""; }
-                @top-right { content: ""; }
-                @top-right-corner { content: ""; }
-                @bottom-left-corner { content: ""; }
-                @bottom-left { content: ""; }
-                @bottom-center { content: ""; }
-                @bottom-right { content: ""; }
-                @bottom-right-corner { content: ""; }
-                @left-top { content: ""; }
-                @left-middle { content: ""; }
-                @left-bottom { content: ""; }
-                @right-top { content: ""; }
-                @right-middle { content: ""; }
-                @right-bottom { content: ""; }
-            }
-            @page:first { 
-                margin: 0;
+                margin: 10mm;
                 @top-left { content: ""; }
                 @top-center { content: ""; }
                 @top-right { content: ""; }
@@ -480,19 +461,11 @@ function generatePDF() {
                 @bottom-center { content: ""; }
                 @bottom-right { content: ""; }
             }
-            * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; page-break-inside: avoid !important; page-break-after: avoid !important; page-break-before: avoid !important; -webkit-text-size-adjust: 100% !important; text-size-adjust: 100% !important; }
+            * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; page-break-inside: avoid !important; page-break-after: avoid !important; page-break-before: avoid !important; }
             html { margin: 0 !important; padding: 0 !important; }
-            body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 14px !important; -webkit-user-select: none !important; user-select: none !important; }
+            body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 14px !important; }
             .preview-actions, .pdf-actions { display: none !important; }
-            .invoice-preview { page-break-inside: avoid !important; page-break-after: avoid !important; width: calc(100% - 20mm) !important; height: auto !important; max-height: 257mm !important; overflow: hidden !important; margin: 10mm !important; transform: scale(0.9) !important; transform-origin: top left !important; position: relative !important; z-index: 1000 !important; }
-            @media print and (max-width: 768px) {
-                .invoice-preview { transform: scale(0.8) !important; max-height: 240mm !important; }
-                .invoice-header { padding: 10px 0 !important; }
-                .invoice-header h1 { font-size: 20px !important; }
-                .tagline { font-size: 11px !important; }
-                .company-details p, .customer-info p { font-size: 11px !important; }
-                .billing-table th, .billing-table td { font-size: 11px !important; padding: 4px 6px !important; }
-            }
+            .invoice-preview { page-break-inside: avoid !important; page-break-after: avoid !important; width: 100% !important; height: auto !important; max-height: 277mm !important; overflow: hidden !important; margin: 0 !important; transform: none !important; }
         }
     `;
     document.head.appendChild(printStyle);
@@ -528,26 +501,7 @@ function downloadPDF() {
         @media print {
             @page { 
                 size: A4; 
-                margin: 0;
-                @top-left-corner { content: ""; }
-                @top-left { content: ""; }
-                @top-center { content: ""; }
-                @top-right { content: ""; }
-                @top-right-corner { content: ""; }
-                @bottom-left-corner { content: ""; }
-                @bottom-left { content: ""; }
-                @bottom-center { content: ""; }
-                @bottom-right { content: ""; }
-                @bottom-right-corner { content: ""; }
-                @left-top { content: ""; }
-                @left-middle { content: ""; }
-                @left-bottom { content: ""; }
-                @right-top { content: ""; }
-                @right-middle { content: ""; }
-                @right-bottom { content: ""; }
-            }
-            @page:first { 
-                margin: 0;
+                margin: 10mm;
                 @top-left { content: ""; }
                 @top-center { content: ""; }
                 @top-right { content: ""; }
@@ -555,19 +509,11 @@ function downloadPDF() {
                 @bottom-center { content: ""; }
                 @bottom-right { content: ""; }
             }
-            * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; page-break-inside: avoid !important; page-break-after: avoid !important; page-break-before: avoid !important; -webkit-text-size-adjust: 100% !important; text-size-adjust: 100% !important; }
+            * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; page-break-inside: avoid !important; page-break-after: avoid !important; page-break-before: avoid !important; }
             html { margin: 0 !important; padding: 0 !important; }
-            body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 14px !important; -webkit-user-select: none !important; user-select: none !important; }
+            body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 14px !important; }
             .preview-actions, .pdf-actions { display: none !important; }
-            .invoice-preview { page-break-inside: avoid !important; page-break-after: avoid !important; width: calc(100% - 20mm) !important; height: auto !important; max-height: 257mm !important; overflow: hidden !important; margin: 10mm !important; transform: scale(0.9) !important; transform-origin: top left !important; position: relative !important; z-index: 1000 !important; }
-            @media print and (max-width: 768px) {
-                .invoice-preview { transform: scale(0.8) !important; max-height: 240mm !important; }
-                .invoice-header { padding: 10px 0 !important; }
-                .invoice-header h1 { font-size: 20px !important; }
-                .tagline { font-size: 11px !important; }
-                .company-details p, .customer-info p { font-size: 11px !important; }
-                .billing-table th, .billing-table td { font-size: 11px !important; padding: 4px 6px !important; }
-            }
+            .invoice-preview { page-break-inside: avoid !important; page-break-after: avoid !important; width: 100% !important; height: auto !important; max-height: 277mm !important; overflow: hidden !important; margin: 0 !important; transform: none !important; }
         }
     `;
     document.head.appendChild(printStyle);
