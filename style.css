@@ -874,8 +874,8 @@ input[type="datetime-local"]:not(:placeholder-shown) {
         background-color: #1e3a8a !important;
         color: white !important;
         text-align: center !important;
-        padding: 15px 0 !important;
-        margin: 0 0 10px 0 !important;
+        padding: 12px 0 !important;
+        margin: 0 0 6px 0 !important;
         width: 100% !important;
         -webkit-print-color-adjust: exact !important;
         color-adjust: exact !important;
@@ -883,15 +883,15 @@ input[type="datetime-local"]:not(:placeholder-shown) {
     
     .invoice-header h1 {
         margin: 0 !important;
-        font-size: 26px !important;
+        font-size: 24px !important;
         font-weight: bold !important;
         letter-spacing: 1px !important;
         color: white !important;
     }
     
     .tagline {
-        margin: 4px 0 0 0 !important;
-        font-size: 13px !important;
+        margin: 2px 0 0 0 !important;
+        font-size: 12px !important;
         font-style: italic !important;
         color: white !important;
     }
@@ -900,65 +900,69 @@ input[type="datetime-local"]:not(:placeholder-shown) {
     .company-info-box {
         border: 2px solid #333 !important;
         text-align: center !important;
-        margin: 0 0 8px 0 !important;
-        padding: 6px !important;
+        margin: 0 0 4px 0 !important;
+        padding: 4px !important;
         background-color: #f8f9fa !important;
         -webkit-print-color-adjust: exact !important;
         color-adjust: exact !important;
     }
     
     .company-details {
-        margin: 0 0 8px 0 !important;
+        margin: 0 0 4px 0 !important;
         text-align: center !important;
     }
     
     .company-details p {
-        margin: 1px 0 !important;
-        font-size: 12px !important;
+        margin: 0 !important;
+        font-size: 11px !important;
         font-family: 'Times New Roman', Times, serif !important;
+        line-height: 1.1 !important;
     }
     
     .customer-header {
         display: flex !important;
         justify-content: space-between !important;
-        margin: 0 0 6px 0 !important;
+        margin: 0 0 3px 0 !important;
         font-weight: bold !important;
         font-family: 'Times New Roman', Times, serif !important;
+        font-size: 12px !important;
     }
     
     .customer-info {
-        margin: 0 0 8px 0 !important;
+        margin: 0 0 4px 0 !important;
     }
     
     .customer-info p {
-        margin: 1px 0 !important;
-        font-size: 12px !important;
+        margin: 0 !important;
+        font-size: 11px !important;
         font-family: 'Times New Roman', Times, serif !important;
+        line-height: 1.1 !important;
     }
     
     .billing-section {
-        margin: 0 0 8px 0 !important;
+        margin: 0 0 4px 0 !important;
     }
     
     .billing-section h3 {
         font-family: 'Times New Roman', Times, serif !important;
-        font-size: 14px !important;
-        margin: 0 0 5px 0 !important;
+        font-size: 12px !important;
+        margin: 0 0 3px 0 !important;
     }
     
     .billing-table {
         width: 100% !important;
         border-collapse: collapse !important;
-        margin: 6px 0 !important;
+        margin: 3px 0 !important;
         font-family: 'Times New Roman', Times, serif !important;
     }
     
     .billing-table th,
     .billing-table td {
-        padding: 4px 8px !important;
-        font-size: 12px !important;
+        padding: 3px 6px !important;
+        font-size: 11px !important;
         border: 1px solid #333 !important;
         font-family: 'Times New Roman', Times, serif !important;
+        line-height: 1.1 !important;
     }
     
     .billing-table th {
@@ -968,33 +972,23 @@ input[type="datetime-local"]:not(:placeholder-shown) {
     }
     
     .signature-section {
-        margin: 6px 0 !important;
+        margin: 3px 0 !important;
         text-align: right !important;
         font-family: 'Times New Roman', Times, serif !important;
-        font-size: 12px !important;
+        font-size: 11px !important;
     }
     
     .invoice-footer {
-        margin: 4px 0 2px 0 !important;
+        margin: 2px 0 !important;
         text-align: center !important;
     }
     
-    .invoice-footer h3 {
-        margin: 0 !important;
-        font-size: 13px !important;
-        font-weight: bold !important;
-        font-family: 'Times New Roman', Times, serif !important;
-    }
-    
-    .footer-text {
-        margin: 0 !important;
-        text-align: center !important;
-    }
-    
-    .footer-text p {
+    .invoice-footer p {
         margin: 0 !important;
         font-size: 10px !important;
+        font-weight: bold !important;
         font-family: 'Times New Roman', Times, serif !important;
+        line-height: 1.1 !important;
     }
     
     .company-info-box h3 {
