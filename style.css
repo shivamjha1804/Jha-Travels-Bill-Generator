@@ -789,6 +789,17 @@ input[type="datetime-local"]:not(:placeholder-shown) {
     @page {
         size: A4;
         margin: 15mm 10mm;
+        /* Remove headers and footers */
+        margin-top: 0;
+        margin-bottom: 0;
+        
+        /* iOS Safari specific */
+        @top-left { content: ""; }
+        @top-center { content: ""; }
+        @top-right { content: ""; }
+        @bottom-left { content: ""; }
+        @bottom-center { content: ""; }
+        @bottom-right { content: ""; }
     }
     
     /* Hide all non-invoice elements */
@@ -804,6 +815,21 @@ input[type="datetime-local"]:not(:placeholder-shown) {
         -webkit-print-color-adjust: exact !important;
         color-adjust: exact !important;
         font-size: 14px !important;
+        /* Mobile Safari specific */
+        -webkit-user-select: none !important;
+        user-select: none !important;
+    }
+    
+    /* Hide mobile browser chrome elements */
+    html {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    /* Additional mobile print fixes */
+    * {
+        -webkit-text-size-adjust: 100% !important;
+        text-size-adjust: 100% !important;
     }
     
     .container {

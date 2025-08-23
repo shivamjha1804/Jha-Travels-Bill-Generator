@@ -451,11 +451,23 @@ function generatePDF() {
     printStyle.id = 'print-style';
     printStyle.innerHTML = `
         @media print {
-            * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; page-break-inside: avoid !important; page-break-after: avoid !important; page-break-before: avoid !important; }
-            body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 14px !important; }
+            @page { 
+                size: A4; 
+                margin: 15mm 10mm; 
+                margin-top: 0; 
+                margin-bottom: 0;
+                @top-left { content: ""; }
+                @top-center { content: ""; }
+                @top-right { content: ""; }
+                @bottom-left { content: ""; }
+                @bottom-center { content: ""; }
+                @bottom-right { content: ""; }
+            }
+            * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; page-break-inside: avoid !important; page-break-after: avoid !important; page-break-before: avoid !important; -webkit-text-size-adjust: 100% !important; text-size-adjust: 100% !important; }
+            html { margin: 0 !important; padding: 0 !important; }
+            body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 14px !important; -webkit-user-select: none !important; user-select: none !important; }
             .preview-actions, .pdf-actions { display: none !important; }
             .invoice-preview { page-break-inside: avoid !important; page-break-after: avoid !important; width: 100% !important; height: auto !important; max-height: 277mm !important; overflow: hidden !important; }
-            @page { size: A4; margin: 15mm 10mm; }
         }
     `;
     document.head.appendChild(printStyle);
@@ -489,11 +501,23 @@ function downloadPDF() {
     printStyle.id = 'download-print-style';
     printStyle.innerHTML = `
         @media print {
-            * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; page-break-inside: avoid !important; page-break-after: avoid !important; page-break-before: avoid !important; }
-            body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 14px !important; }
+            @page { 
+                size: A4; 
+                margin: 15mm 10mm; 
+                margin-top: 0; 
+                margin-bottom: 0;
+                @top-left { content: ""; }
+                @top-center { content: ""; }
+                @top-right { content: ""; }
+                @bottom-left { content: ""; }
+                @bottom-center { content: ""; }
+                @bottom-right { content: ""; }
+            }
+            * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; page-break-inside: avoid !important; page-break-after: avoid !important; page-break-before: avoid !important; -webkit-text-size-adjust: 100% !important; text-size-adjust: 100% !important; }
+            html { margin: 0 !important; padding: 0 !important; }
+            body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 14px !important; -webkit-user-select: none !important; user-select: none !important; }
             .preview-actions, .pdf-actions { display: none !important; }
             .invoice-preview { page-break-inside: avoid !important; page-break-after: avoid !important; width: 100% !important; height: auto !important; max-height: 277mm !important; overflow: hidden !important; }
-            @page { size: A4; margin: 15mm 10mm; }
         }
     `;
     document.head.appendChild(printStyle);
