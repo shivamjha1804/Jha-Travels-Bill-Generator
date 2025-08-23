@@ -390,7 +390,7 @@ function generateInvoiceHTML(data) {
         </div>
         
         <div class="company-info-box">
-            <h3>Company Information</h3>
+            <h3>Information</h3>
         </div>
         
         <div class="company-details">
