@@ -454,12 +454,32 @@ function generatePDF() {
             @page { 
                 size: A4; 
                 margin: 10mm;
-                @top-left { content: ""; }
-                @top-center { content: ""; }
-                @top-right { content: ""; }
-                @bottom-left { content: ""; }
-                @bottom-center { content: ""; }
-                @bottom-right { content: ""; }
+                @top-left-corner { content: "" !important; }
+                @top-left { content: "" !important; }
+                @top-center { content: "" !important; }
+                @top-right { content: "" !important; }
+                @top-right-corner { content: "" !important; }
+                @bottom-left-corner { content: "" !important; }
+                @bottom-left { content: "" !important; }
+                @bottom-center { content: "" !important; }
+                @bottom-right { content: "" !important; }
+                @bottom-right-corner { content: "" !important; }
+                @left-top { content: "" !important; }
+                @left-middle { content: "" !important; }
+                @left-bottom { content: "" !important; }
+                @right-top { content: "" !important; }
+                @right-middle { content: "" !important; }
+                @right-bottom { content: "" !important; }
+            }
+            @page:first {
+                @bottom-left { content: none !important; }
+                @bottom-center { content: none !important; }
+                @bottom-right { content: none !important; }
+            }
+            @page:last {
+                @bottom-left { content: none !important; }
+                @bottom-center { content: none !important; }
+                @bottom-right { content: none !important; }
             }
             * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; page-break-inside: avoid !important; page-break-after: avoid !important; page-break-before: avoid !important; }
             html { margin: 0 !important; padding: 0 !important; }
@@ -502,12 +522,32 @@ function downloadPDF() {
             @page { 
                 size: A4; 
                 margin: 10mm;
-                @top-left { content: ""; }
-                @top-center { content: ""; }
-                @top-right { content: ""; }
-                @bottom-left { content: ""; }
-                @bottom-center { content: ""; }
-                @bottom-right { content: ""; }
+                @top-left-corner { content: "" !important; }
+                @top-left { content: "" !important; }
+                @top-center { content: "" !important; }
+                @top-right { content: "" !important; }
+                @top-right-corner { content: "" !important; }
+                @bottom-left-corner { content: "" !important; }
+                @bottom-left { content: "" !important; }
+                @bottom-center { content: "" !important; }
+                @bottom-right { content: "" !important; }
+                @bottom-right-corner { content: "" !important; }
+                @left-top { content: "" !important; }
+                @left-middle { content: "" !important; }
+                @left-bottom { content: "" !important; }
+                @right-top { content: "" !important; }
+                @right-middle { content: "" !important; }
+                @right-bottom { content: "" !important; }
+            }
+            @page:first {
+                @bottom-left { content: none !important; }
+                @bottom-center { content: none !important; }
+                @bottom-right { content: none !important; }
+            }
+            @page:last {
+                @bottom-left { content: none !important; }
+                @bottom-center { content: none !important; }
+                @bottom-right { content: none !important; }
             }
             * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; page-break-inside: avoid !important; page-break-after: avoid !important; page-break-before: avoid !important; }
             html { margin: 0 !important; padding: 0 !important; }
