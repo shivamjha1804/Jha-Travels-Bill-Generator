@@ -508,38 +508,49 @@ function downloadPDF() {
         
         console.log('Downloading PDF:', filename);
         
-        // iOS Safari has issues with direct download - use alternative method
-        if (isIOS() && isSafari()) {
-            console.log('Using iOS Safari alternative download method');
+        // iOS Safari and mobile handling
+        if (isIOS()) {
+            console.log('Using iOS download method');
             
             pdfMake.createPdf(docDefinition).getBlob((blob) => {
-                console.log('PDF blob created for iOS Safari:', blob);
+                console.log('PDF blob created for iOS:', blob);
                 
-                // Create a URL for the blob
+                // Create download URL
                 const url = URL.createObjectURL(blob);
                 
-                // Try to use the share API if available (iOS 12+)
-                if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'application/pdf' })] })) {
-                    console.log('Using Web Share API');
-                    const file = new File([blob], filename, { type: 'application/pdf' });
-                    navigator.share({
-                        files: [file],
-                        title: 'JHA Travels Invoice',
-                        text: 'Invoice from JHA Travels'
-                    }).then(() => {
-                        console.log('Share successful');
-                        URL.revokeObjectURL(url);
-                    }).catch((error) => {
-                        console.error('Share failed:', error);
-                        fallbackDownload(url, filename);
-                    });
+                // For iOS 13+ with Share API support
+                if (navigator.share) {
+                    console.log('Using iOS Share API');
+                    try {
+                        const file = new File([blob], filename, { type: 'application/pdf' });
+                        navigator.share({
+                            files: [file],
+                            title: 'JHA Travels Invoice'
+                        }).then(() => {
+                            console.log('iOS Share successful');
+                            URL.revokeObjectURL(url);
+                        }).catch((error) => {
+                            console.log('iOS Share failed, opening PDF:', error);
+                            // Open PDF in new tab with instructions
+                            const newWindow = window.open(url, '_blank');
+                            if (newWindow) {
+                                // Show instructions after a brief delay
+                                setTimeout(() => {
+                                    alert('To save this PDF on iPhone:\n\n1. Tap the Share button (square with arrow)\n2. Select "Save to Files"\n3. Choose your preferred location\n\nOr tap and hold the PDF and select "Save to Files"');
+                                }, 1500);
+                            }
+                        });
+                    } catch (shareError) {
+                        console.log('Share API error:', shareError);
+                        openPDFWithInstructions(url);
+                    }
                 } else {
-                    console.log('Web Share API not available, using fallback');
-                    fallbackDownload(url, filename);
+                    console.log('No Share API, opening PDF with instructions');
+                    openPDFWithInstructions(url);
                 }
             });
         } else {
-            // Standard download for other browsers
+            // Standard download for non-iOS devices
             console.log('Using standard download method');
             pdfMake.createPdf(docDefinition).download(filename);
         }
@@ -549,43 +560,23 @@ function downloadPDF() {
     }
 }
 
-// Fallback download method for iOS Safari
-function fallbackDownload(url, filename) {
-    console.log('Using fallback download method');
-    
-    // Create a temporary link and click it
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.style.display = 'none';
-    
-    document.body.appendChild(a);
-    
-    // Try to trigger download
-    try {
-        a.click();
-        console.log('Download triggered via click');
-    } catch (e) {
-        console.error('Click download failed:', e);
-        // Last resort: open in new window with instruction
-        const newWindow = window.open(url, '_blank');
-        if (newWindow) {
-            // Add a small delay then show instruction
-            setTimeout(() => {
-                alert('Please use "Share" button in Safari to save the PDF, or press and hold the PDF to save it to Files app.');
-            }, 1000);
-        } else {
-            alert('Please allow popups to download the PDF, or try using Chrome browser.');
-        }
+// Helper function to open PDF with instructions for iOS
+function openPDFWithInstructions(url) {
+    const newWindow = window.open(url, '_blank');
+    if (newWindow) {
+        // Show clear instructions for iOS users
+        setTimeout(() => {
+            alert('To save this PDF on iPhone/iPad:\n\n📱 Method 1 (Recommended):\n1. Tap the Share button (⬆️)\n2. Select "Save to Files"\n3. Choose location and tap "Save"\n\n📱 Method 2:\n1. Tap and hold the PDF\n2. Select "Save to Files" from menu\n3. Choose location and tap "Save"\n\n💡 The PDF will be saved to your Files app');
+        }, 1500);
+    } else {
+        // Popup blocked - provide alternative
+        alert('Popup blocked! Please:\n\n1. Allow popups for this site\n2. Try again\n\nOr use Chrome browser for direct downloads');
     }
     
-    // Clean up
-    document.body.removeChild(a);
-    
-    // Clean up blob URL after a delay
+    // Clean up URL after delay
     setTimeout(() => {
         URL.revokeObjectURL(url);
-    }, 5000);
+    }, 30000); // Keep URL alive longer for iOS
 }
 
 // Device detection functions
@@ -612,12 +603,12 @@ function createPDFDocDefinition(data) {
     let totalAmount = 0;
     let tableBody = [];
     
-    // Mobile-optimized sizes
-    const headerFontSize = mobile ? 18 : 24;
-    const taglineFontSize = mobile ? 10 : 12;
-    const sectionFontSize = mobile ? 12 : 14;
-    const textFontSize = mobile ? 9 : 11;
-    const tableFontSize = mobile ? 8 : 10;
+    // Mobile-optimized sizes - make fonts LARGER for mobile viewing, not smaller
+    const headerFontSize = mobile ? 28 : 24;  // Larger header on mobile for readability
+    const taglineFontSize = mobile ? 14 : 12;  // Larger tagline on mobile
+    const sectionFontSize = mobile ? 16 : 14;  // Larger sections on mobile  
+    const textFontSize = mobile ? 13 : 11;     // Larger text on mobile
+    const tableFontSize = mobile ? 12 : 10;    // Larger table text on mobile
     
     // Table header with mobile optimization
     tableBody.push([
