@@ -442,7 +442,47 @@ function generateInvoiceHTML(data) {
     `;
 }
 
-function generatePDF() {
+// Device detection function
+function isSafari() {
+    return /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor);
+}
+
+function isMobile() {
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+}
+
+// Safari/Mobile PDF generation using html2pdf.js
+function generatePDFSafari() {
+    const customerName = currentInvoiceData.customer.name.replace(/\s+/g, '_');
+    const date = currentInvoiceData.date.replace(/\//g, '_');
+    
+    const element = document.getElementById('invoicePreview');
+    const options = {
+        margin: 10,
+        filename: `JHA_TRAVELS_${customerName}_${date}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            letterRendering: true,
+            allowTaint: false
+        },
+        jsPDF: { 
+            unit: 'mm', 
+            format: 'a4', 
+            orientation: 'portrait' 
+        }
+    };
+    
+    // Show PDF actions
+    const pdfActions = document.getElementById('pdfActions');
+    pdfActions.style.display = 'block';
+    
+    html2pdf().set(options).from(element).save();
+}
+
+// Chrome/Desktop PDF generation using window.print()
+function generatePDFChrome() {
     const previewActions = document.querySelector('.preview-actions');
     const pdfActions = document.getElementById('pdfActions');
     
@@ -490,7 +530,45 @@ function generatePDF() {
     window.print();
 }
 
-function downloadPDF() {
+// Main PDF generation function - chooses approach based on browser
+function generatePDF() {
+    if (isSafari() || isMobile()) {
+        // Use html2pdf.js for Safari and mobile devices
+        generatePDFSafari();
+    } else {
+        // Use window.print() for Chrome/Desktop
+        generatePDFChrome();
+    }
+}
+
+// Safari/Mobile download PDF using html2pdf.js
+function downloadPDFSafari() {
+    const customerName = currentInvoiceData.customer.name.replace(/\s+/g, '_');
+    const date = currentInvoiceData.date.replace(/\//g, '_');
+    
+    const element = document.getElementById('invoicePreview');
+    const options = {
+        margin: 10,
+        filename: `JHA_TRAVELS_${customerName}_${date}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            letterRendering: true,
+            allowTaint: false
+        },
+        jsPDF: { 
+            unit: 'mm', 
+            format: 'a4', 
+            orientation: 'portrait' 
+        }
+    };
+    
+    html2pdf().set(options).from(element).save();
+}
+
+// Chrome/Desktop download PDF using window.print()
+function downloadPDFChrome() {
     const customerName = currentInvoiceData.customer.name.replace(/\s+/g, '_');
     const date = currentInvoiceData.date.replace(/\//g, '_');
     
@@ -535,6 +613,17 @@ function downloadPDF() {
         const printStyleEl = document.getElementById('download-print-style');
         if (printStyleEl) printStyleEl.remove();
     }, 2000);
+}
+
+// Main download PDF function - chooses approach based on browser
+function downloadPDF() {
+    if (isSafari() || isMobile()) {
+        // Use html2pdf.js for Safari and mobile devices
+        downloadPDFSafari();
+    } else {
+        // Use window.print() for Chrome/Desktop
+        downloadPDFChrome();
+    }
 }
 
 function sendWhatsApp() {
