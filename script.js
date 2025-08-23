@@ -454,7 +454,7 @@ function generatePDFSafari() {
     
     const element = document.getElementById('invoicePreview');
     
-    // Add PDF-optimized CSS temporarily
+    // Add ultra-compact PDF-optimized CSS for mobile
     const pdfStyle = document.createElement('style');
     pdfStyle.id = 'pdf-optimize-style';
     pdfStyle.innerHTML = `
@@ -473,44 +473,102 @@ function generatePDFSafari() {
             background-color: #1e3a8a !important;
             color: white !important;
             text-align: center !important;
-            padding: 20px 0 !important;
-            margin: 0 0 15px 0 !important;
+            padding: 8px 0 !important;
+            margin: 0 0 3px 0 !important;
             width: 100% !important;
             box-sizing: border-box !important;
         }
         
         .invoice-header h1 {
             margin: 0 !important;
-            font-size: 28px !important;
+            font-size: 18px !important;
             font-weight: bold !important;
             color: white !important;
-            font-family: 'Arial', 'Helvetica', sans-serif !important;
+            font-family: 'Times New Roman', Times, serif !important;
+        }
+        
+        .tagline {
+            margin: 1px 0 0 0 !important;
+            font-size: 9px !important;
+            font-style: italic !important;
+            color: white !important;
+            font-family: 'Times New Roman', Times, serif !important;
         }
         
         .company-info-box {
-            border: 2px solid #333 !important;
+            border: 1px solid #333 !important;
             background-color: #f8f9fa !important;
-            padding: 8px !important;
-            margin: 0 0 10px 0 !important;
+            padding: 3px !important;
+            margin: 0 0 3px 0 !important;
             text-align: center !important;
             box-sizing: border-box !important;
+        }
+        
+        .company-info-box h3 {
+            margin: 0 !important;
+            font-size: 10px !important;
+            font-family: 'Times New Roman', Times, serif !important;
+        }
+        
+        .company-details {
+            margin: 0 0 3px 0 !important;
+            text-align: center !important;
+        }
+        
+        .company-details p {
+            margin: 0 !important;
+            font-size: 9px !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            line-height: 1.0 !important;
+        }
+        
+        .customer-header {
+            display: flex !important;
+            justify-content: space-between !important;
+            margin: 0 0 2px 0 !important;
+            font-weight: bold !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            font-size: 10px !important;
+        }
+        
+        .customer-info {
+            margin: 0 0 3px 0 !important;
+        }
+        
+        .customer-info p {
+            margin: 0 !important;
+            font-size: 9px !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            line-height: 1.0 !important;
+        }
+        
+        .billing-section {
+            margin: 0 0 3px 0 !important;
+        }
+        
+        .billing-section h3 {
+            font-family: 'Times New Roman', Times, serif !important;
+            font-size: 10px !important;
+            margin: 0 0 2px 0 !important;
         }
         
         .billing-table {
             width: 100% !important;
             border-collapse: collapse !important;
-            font-family: 'Arial', 'Helvetica', sans-serif !important;
-            margin: 10px 0 !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            margin: 2px 0 !important;
         }
         
         .billing-table th,
         .billing-table td {
             border: 1px solid #333 !important;
-            padding: 8px !important;
-            font-size: 14px !important;
+            padding: 2px 4px !important;
+            font-size: 9px !important;
             text-align: left !important;
             background: white !important;
             color: #000 !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            line-height: 1.0 !important;
         }
         
         .billing-table th {
@@ -521,6 +579,26 @@ function generatePDFSafari() {
         .total-row {
             background-color: #e9ecef !important;
             font-weight: bold !important;
+        }
+        
+        .signature-section {
+            margin: 2px 0 !important;
+            text-align: right !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            font-size: 9px !important;
+        }
+        
+        .invoice-footer {
+            margin: 1px 0 !important;
+            text-align: center !important;
+        }
+        
+        .invoice-footer p {
+            margin: 0 !important;
+            font-size: 8px !important;
+            font-weight: bold !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            line-height: 1.0 !important;
         }
     `;
     document.head.appendChild(pdfStyle);
@@ -648,44 +726,102 @@ function downloadPDFSafari() {
             background-color: #1e3a8a !important;
             color: white !important;
             text-align: center !important;
-            padding: 20px 0 !important;
-            margin: 0 0 15px 0 !important;
+            padding: 8px 0 !important;
+            margin: 0 0 3px 0 !important;
             width: 100% !important;
             box-sizing: border-box !important;
         }
         
         .invoice-header h1 {
             margin: 0 !important;
-            font-size: 28px !important;
+            font-size: 18px !important;
             font-weight: bold !important;
             color: white !important;
-            font-family: 'Arial', 'Helvetica', sans-serif !important;
+            font-family: 'Times New Roman', Times, serif !important;
+        }
+        
+        .tagline {
+            margin: 1px 0 0 0 !important;
+            font-size: 9px !important;
+            font-style: italic !important;
+            color: white !important;
+            font-family: 'Times New Roman', Times, serif !important;
         }
         
         .company-info-box {
-            border: 2px solid #333 !important;
+            border: 1px solid #333 !important;
             background-color: #f8f9fa !important;
-            padding: 8px !important;
-            margin: 0 0 10px 0 !important;
+            padding: 3px !important;
+            margin: 0 0 3px 0 !important;
             text-align: center !important;
             box-sizing: border-box !important;
+        }
+        
+        .company-info-box h3 {
+            margin: 0 !important;
+            font-size: 10px !important;
+            font-family: 'Times New Roman', Times, serif !important;
+        }
+        
+        .company-details {
+            margin: 0 0 3px 0 !important;
+            text-align: center !important;
+        }
+        
+        .company-details p {
+            margin: 0 !important;
+            font-size: 9px !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            line-height: 1.0 !important;
+        }
+        
+        .customer-header {
+            display: flex !important;
+            justify-content: space-between !important;
+            margin: 0 0 2px 0 !important;
+            font-weight: bold !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            font-size: 10px !important;
+        }
+        
+        .customer-info {
+            margin: 0 0 3px 0 !important;
+        }
+        
+        .customer-info p {
+            margin: 0 !important;
+            font-size: 9px !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            line-height: 1.0 !important;
+        }
+        
+        .billing-section {
+            margin: 0 0 3px 0 !important;
+        }
+        
+        .billing-section h3 {
+            font-family: 'Times New Roman', Times, serif !important;
+            font-size: 10px !important;
+            margin: 0 0 2px 0 !important;
         }
         
         .billing-table {
             width: 100% !important;
             border-collapse: collapse !important;
-            font-family: 'Arial', 'Helvetica', sans-serif !important;
-            margin: 10px 0 !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            margin: 2px 0 !important;
         }
         
         .billing-table th,
         .billing-table td {
             border: 1px solid #333 !important;
-            padding: 8px !important;
-            font-size: 14px !important;
+            padding: 2px 4px !important;
+            font-size: 9px !important;
             text-align: left !important;
             background: white !important;
             color: #000 !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            line-height: 1.0 !important;
         }
         
         .billing-table th {
@@ -696,6 +832,26 @@ function downloadPDFSafari() {
         .total-row {
             background-color: #e9ecef !important;
             font-weight: bold !important;
+        }
+        
+        .signature-section {
+            margin: 2px 0 !important;
+            text-align: right !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            font-size: 9px !important;
+        }
+        
+        .invoice-footer {
+            margin: 1px 0 !important;
+            text-align: center !important;
+        }
+        
+        .invoice-footer p {
+            margin: 0 !important;
+            font-size: 8px !important;
+            font-weight: bold !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            line-height: 1.0 !important;
         }
     `;
     document.head.appendChild(pdfStyle);
