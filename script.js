@@ -431,7 +431,8 @@ function generateInvoiceHTML(data) {
         </div>
         
         <div class="signature-section">
-            <p>Signature: ..................................................</p>
+            <p>Signature</p>
+            <img src="signature.png" alt="Sanjib Jha Signature" class="signature-image">
         </div>
         
         <div class="invoice-footer">
