@@ -484,7 +484,7 @@ function downloadPDF() {
         
         // Set document title for PDF filename
         const originalTitle = document.title;
-        document.title = `JHA_TRAVELS_${customerName}_${date}`;
+        document.title = `${customerName}_${date}_JhaTravels`;
         
         // Use built-in browser print to PDF
         window.print();
